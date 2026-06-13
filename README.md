@@ -21,10 +21,10 @@ Enable developers to create production-ready web applications in minutes by asse
 npm install
 npm run build
 
-# Create a new project
-node cli/dist/index.js create my-app
+# Create a new project (link local packages while unpublished)
+node cli/dist/index.js create my-app --local
 
-# Or after publishing
+# Or after publishing to GitHub Packages (see docs/publishing.md)
 npx @genesis/cli create my-app
 ```
 

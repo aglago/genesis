@@ -5,6 +5,7 @@ import { createCommand } from "./commands/create.js";
 import { addCommand } from "./commands/add.js";
 import { removeCommand } from "./commands/remove.js";
 import { updateCommand } from "./commands/update.js";
+import { runCommand, handleCliError } from "./utils/exit.js";
 
 const program = new Command();
 
@@ -21,23 +22,27 @@ program
   .option("-s, --structure <structure>", "Project structure: monolith (default) or monorepo")
   .option("-m, --modules <modules>", "Comma-separated module list")
   .option("-y, --yes", "Use defaults without prompts")
-  .action((name, options) => createCommand(name, options));
+  .option("-l, --local", "Link @genesis/* packages from the local monorepo (file: paths)")
+  .action((name, options) => runCommand(() => createCommand(name, options)));
 
 program
   .command("add")
   .description("Add a module to an existing project")
   .argument("<module>", "Module name (auth, payments, etc.)")
-  .action(addCommand);
+  .option("-l, --local", "Link @genesis/* packages from the local monorepo (file: paths)")
+  .action((module, options) => runCommand(() => addCommand(module, options)));
 
 program
   .command("remove")
   .description("Remove a module from a project")
   .argument("<module>", "Module name")
-  .action(removeCommand);
+  .action((module) => runCommand(() => removeCommand(module)));
 
 program
   .command("update")
   .description("Update Genesis modules to latest compatible versions")
-  .action(updateCommand);
+  .action(() => runCommand(() => updateCommand()));
 
-program.parse();
+program.parseAsync().catch((error) => {
+  handleCliError(error);
+});

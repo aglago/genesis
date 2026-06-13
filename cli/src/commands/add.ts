@@ -1,6 +1,5 @@
 import path from "path";
 import chalk from "chalk";
-import ora from "ora";
 import { confirm } from "@inquirer/prompts";
 import type { ModuleId } from "@genesis/core";
 import { resolveModuleOrder } from "@genesis/core";
@@ -13,8 +12,14 @@ import {
 } from "../utils/scaffold.js";
 import { linkGenesisPackages } from "../utils/template.js";
 import { findGenesisAppDir } from "../utils/structure.js";
+import { withSpinner } from "../utils/exit.js";
+import { usesLocalPackages } from "../utils/local-packages.js";
 
-export async function addCommand(moduleName: string): Promise<void> {
+export interface AddOptions {
+  local?: boolean;
+}
+
+export async function addCommand(moduleName: string, options: AddOptions = {}): Promise<void> {
   const manifests = await loadAllManifests();
   const manifest = getManifestById(moduleName as ModuleId);
 
@@ -38,14 +43,18 @@ export async function addCommand(moduleName: string): Promise<void> {
   if (missingDeps.length > 0) {
     console.log(chalk.yellow(`Installing dependencies first: ${missingDeps.join(", ")}`));
     for (const dep of missingDeps) {
-      await addCommand(dep);
+      await addCommand(dep, options);
     }
   }
 
-  const spinner = ora(`Adding ${manifest.name}...`).start();
+  const useLocal = options.local ?? usesLocalPackages(targetDir);
 
-  try {
-    linkGenesisPackages(targetDir, [manifest.npmPackage, "@genesis/core", "@genesis/database", "@genesis/ui"]);
+  await withSpinner(`Adding ${manifest.name}...`, async (spinner) => {
+    linkGenesisPackages(
+      targetDir,
+      [manifest.npmPackage, "@genesis/core", "@genesis/database", "@genesis/ui"],
+      { local: useLocal },
+    );
 
     const allModuleIds = [...existing, moduleName] as ModuleId[];
     const orderedIds = resolveModuleOrder(allModuleIds, manifests);
@@ -75,8 +84,5 @@ export async function addCommand(moduleName: string): Promise<void> {
         console.log(chalk.dim(`    ${envVar.key} — ${envVar.description}`));
       }
     }
-  } catch (error) {
-    spinner.fail(chalk.red(`Failed to add ${moduleName}`));
-    throw error;
-  }
+  });
 }

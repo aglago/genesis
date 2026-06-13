@@ -21,6 +21,9 @@ For `create` options and examples, see [Quickstart](quickstart.md).
 | `-s, --structure` | `monolith` or `monorepo` |
 | `-t, --template` | Template ID — see [Templates](templates.md) |
 | `-m, --modules` | Comma-separated module IDs |
+| `-l, --local` | Link `@genesis/*` from the local monorepo (`file:` paths) |
+
+See [Publishing](publishing.md) for local dev vs GitHub Packages install.
 
 ---
 
@@ -29,6 +32,7 @@ For `create` options and examples, see [Quickstart](quickstart.md).
 ```bash
 cd my-app
 genesis add notifications
+genesis add auth --local   # link from local monorepo when testing unpublished packages
 ```
 
 For monorepo projects, run from the repo root or `apps/web` — the CLI finds `genesis.config.ts` in either location.

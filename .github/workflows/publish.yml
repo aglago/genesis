@@ -25,6 +25,6 @@ jobs:
 
       - run: npm run build
 
-      - run: npm publish --workspaces --if-present
+      - run: npm publish --workspaces --if-present --access restricted
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,6 +2,12 @@ import fs from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
 import { getTemplatesDir } from "./manifests.js";
+import { resolveLocalPackageRef } from "./local-packages.js";
+
+export interface LinkGenesisPackagesOptions {
+  /** Link to local monorepo packages via file: paths instead of the npm registry. */
+  local?: boolean;
+}
 
 export interface NextJsTemplateOptions {
   projectName: string;
@@ -257,16 +263,21 @@ export function installPackages(targetDir: string, packages: string[]): void {
   }
 }
 
-export function linkGenesisPackages(targetDir: string, packages: string[]): void {
+export function linkGenesisPackages(
+  targetDir: string,
+  packages: string[],
+  options: LinkGenesisPackagesOptions = {},
+): void {
   const packageJsonPath = path.join(targetDir, "package.json");
   const pkg = fs.readJsonSync(packageJsonPath);
 
   for (const name of packages) {
-    pkg.dependencies[name] = "*";
+    pkg.dependencies[name] = options.local ? resolveLocalPackageRef(targetDir, name) : "*";
   }
 
   if (packages.some((p) => p === "@genesis/ui" || p === "@genesis/dashboard" || p === "@genesis/auth")) {
-    pkg.dependencies["@genesis/ui"] = pkg.dependencies["@genesis/ui"] ?? "*";
+    const uiRef = options.local ? resolveLocalPackageRef(targetDir, "@genesis/ui") : "*";
+    pkg.dependencies["@genesis/ui"] = pkg.dependencies["@genesis/ui"] ?? uiRef;
   }
 
   fs.writeJsonSync(packageJsonPath, pkg, { spaces: 2 });

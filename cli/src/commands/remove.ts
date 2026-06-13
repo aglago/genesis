@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import ora from "ora";
 import { confirm } from "@inquirer/prompts";
 import type { ModuleId } from "@genesis/core";
 import { loadAllManifests, getManifestById } from "../utils/manifests.js";
@@ -9,6 +8,7 @@ import {
   readGenesisConfig,
 } from "../utils/scaffold.js";
 import { findGenesisAppDir } from "../utils/structure.js";
+import { withSpinner } from "../utils/exit.js";
 
 export async function removeCommand(moduleName: string): Promise<void> {
   await loadAllManifests();
@@ -37,9 +37,7 @@ export async function removeCommand(moduleName: string): Promise<void> {
     return;
   }
 
-  const spinner = ora(`Removing ${manifest.name}...`).start();
-
-  try {
+  await withSpinner(`Removing ${manifest.name}...`, async (spinner) => {
     const removed = await removeScaffoldFiles(manifest, targetDir);
     const remaining = existing.filter((id) => id !== manifest.configFactory);
 
@@ -63,8 +61,5 @@ export async function removeCommand(moduleName: string): Promise<void> {
     }
 
     console.log(chalk.dim(`  Run npm uninstall ${manifest.npmPackage} to remove the package.`));
-  } catch (error) {
-    spinner.fail(chalk.red(`Failed to remove ${moduleName}`));
-    throw error;
-  }
+  });
 }

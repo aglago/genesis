@@ -15,19 +15,38 @@ npm install
 npm run build
 ```
 
-Create projects with the local CLI:
+Create projects with the local CLI and **`--local`** so `@genesis/*` packages link from disk (no registry):
 
 ```bash
-node cli/dist/index.js create my-app
+node cli/dist/index.js create my-app --local
 ```
 
-### Option B — Published CLI (future)
+Example with a template, no prompts:
 
-Once `@genesis/cli` is published:
+```bash
+node cli/dist/index.js create my-portfolio --local -y -t informational-site
+cd my-portfolio
+cp .env.example .env
+npm install
+npm run dev
+```
+
+### Option B — Published CLI
+
+Once `@genesis/cli` is published to GitHub Packages:
+
+1. Copy [`.npmrc.example`](../.npmrc.example) and set `GITHUB_TOKEN` (see [Publishing](publishing.md)).
+2. Run:
 
 ```bash
 npx @genesis/cli create my-app
+cd my-app
+cp .env.example .env
+npm install
+npm run dev
 ```
+
+Full publish and tagging guide: [Publishing](publishing.md).
 
 ---
 
@@ -42,22 +61,31 @@ genesis create my-app
 You will be prompted for:
 
 1. **Project name** — e.g. `my-app`
-2. **Project structure** — monolith (default) or Turborepo monorepo ([details](templates.md#project-structure-monolith-vs-monorepo))
+2. **Project structure** — monolith (default) or Turborepo monorepo
 3. **Template** — blank, informational site, SaaS, or e-commerce ([details](templates.md))
-4. **Modules** — checkboxes for auth, branding, payments, etc.
+4. **Modules** — only for **`custom`** (full picker), or optional **Customize modules?** for named templates
 
-Example session:
+Example session (informational site):
 
 ```
-Project name: acme-saas
-Project structure: Monolith — single Next.js app (recommended)
-Select template: SaaS Starter
+Project name: my-portfolio
+Project structure: Monolith
+Select template: Informational Website
+
+  Marketing and content sites without user accounts or payments
+  Includes: Branding
+
+? Customize modules for this template? No
+```
+
+Example session (custom):
+
+```
+Project name: my-app
+Select template: Blank (custom)
 Select modules:
   [x] Authentication
   [x] Branding
-  [x] Payments
-  [x] Admin Dashboard
-  [ ] Notifications
 ```
 
 ### Non-interactive (CI / scripts)
@@ -87,6 +115,7 @@ genesis create my-store -y -t ecommerce
 | `-s, --structure <type>` | `monolith` (default) or `monorepo` — see [Templates](templates.md#project-structure-monolith-vs-monorepo) |
 | `-t, --template <name>` | `custom`, `informational-site`, `saas-app`, `ecommerce` — see [Templates](templates.md) |
 | `-m, --modules <list>` | Comma-separated module IDs, e.g. `auth,branding,payments` |
+| `-l, --local` | Link `@genesis/*` from the local monorepo (`file:` paths) — see [Publishing](publishing.md#local-development-before-publishing) |
 
 ---
 

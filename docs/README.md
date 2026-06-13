@@ -12,6 +12,7 @@ Practical guides for creating projects, configuring modules, and using Genesis i
 | [Configuration](configuration.md) | Environment variables and `genesis.config.ts` |
 | [Workflows](workflows.md) | Portfolio, SaaS, e-commerce, and incremental setups |
 | [Troubleshooting](troubleshooting.md) | Common errors and fixes |
+| [Publishing](publishing.md) | Local `--local` linking, Git tags, GitHub Packages |
 
 ## Modules
 

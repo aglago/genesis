@@ -8,12 +8,14 @@ Templates do **not** dictate project structure — choose **monolith** or **mono
 
 ## Available Templates
 
-| Template ID | CLI label | Best for |
-|-------------|-----------|----------|
-| `custom` | Blank (custom) | Full control — pick modules yourself, minimal starting page |
-| `informational-site` | Informational Website | Landing pages, portfolios, marketing sites |
-| `saas-app` | SaaS Starter | Subscription products, B2B tools, apps with auth + billing |
-| `ecommerce` | E-commerce | Online stores, product catalogs, checkout flows |
+| Template ID | CLI label | Best for | Bundled modules |
+|-------------|-----------|----------|-----------------|
+| `custom` | Blank (custom) | Full control — pick any modules yourself | *(none — you choose)* |
+| `informational-site` | Informational Website | Landing pages, portfolios, marketing sites | `branding` |
+| `saas-app` | SaaS Starter | Subscription products, B2B tools, apps with auth + billing | `auth`, `branding`, `payments`, `dashboard`, `notifications` |
+| `ecommerce` | E-commerce | Online stores, product catalogs, checkout flows | `payments`, `dashboard` |
+
+Named templates install their **bundled modules automatically**. You are not asked to pick auth on an informational site — that would break the template's purpose. Use **`custom`** for full module freedom, or answer **Yes** to "Customize modules?" to add optional extras.
 
 ---
 
@@ -47,17 +49,20 @@ Selected modules then add routes, API handlers, components, and env vars on top 
 
 **Purpose:** Start from a clean slate. No template-specific pages — only the base Next.js home page.
 
-**Default modules:** None (you choose at the prompt or via `-m`).
+**Modules:** Full picker — choose any combination.
 
 **Home page:** Generic placeholder — project name + "Built with Genesis".
 
 **When to use:**
 - You know exactly which modules you need
 - Internal tools, APIs, or non-standard app shapes
-- Incremental setup (`genesis add` over time)
+- Mixing modules that named templates would block
 
 **Example:**
 ```bash
+genesis create my-app -t custom
+# Interactive module picker follows
+
 genesis create my-app -t custom -m branding,auth
 ```
 
@@ -67,13 +72,15 @@ genesis create my-app -t custom -m branding,auth
 
 **Purpose:** Marketing and content sites without user accounts or payments.
 
-**Default modules:** `branding`
+**Bundled modules (automatic):** `branding`
 
-**Template adds:** Replaces `app/page.tsx` with:
+**Optional add-ons (Customize modules?):** `emails`, `analytics`
+
+**Blocked:** `auth`, `payments`, `dashboard`
+
+**Template adds to `app/page.tsx`:**
 - Hero section with headline and CTA
 - Contact form section (`#contact`)
-
-**Does not include:** Auth, payments, dashboard, or admin features.
 
 **When to use:**
 - Portfolio, agency site, product landing page
@@ -85,42 +92,28 @@ genesis create my-app -t custom -m branding,auth
 genesis create my-portfolio -y -t informational-site
 ```
 
-**Typical next steps:** Customize copy in `app/page.tsx`, set branding colors in `genesis.config.ts`, add logo to `public/`.
-
 ---
 
 ### `saas-app` — SaaS Starter
 
-**Purpose:** Software-as-a-service products with user accounts, admin panel, and payments.
+**Purpose:** Software-as-a-service products with user accounts, admin panel, payments, and notifications.
 
-**Default modules:** `auth`, `branding`, `payments`, `dashboard`
+**Bundled modules (automatic):** `auth`, `branding`, `payments`, `dashboard`, `notifications`
 
-**Template adds:** Replaces `app/page.tsx` with:
-- SaaS landing hero
-- "Get Started" → `/register`
-- "Sign In" → `/login`
+**Optional add-ons (Customize modules?):** `emails`, `uploads`, `analytics`
+
+**Template adds to `app/page.tsx`:**
+- SaaS landing hero with Get Started / Sign In links
 
 **Module scaffolds also add:**
-- Auth pages: `/login`, `/register`, `/forgot-password`, `/verify-email`
-- Dashboard: `/dashboard`, `/dashboard/users`, `/dashboard/settings`
-- API: auth, payment init/verify, Paystack webhook
-
-**When to use:**
-- B2B/B2C SaaS with subscriptions or one-time payments
-- Apps needing login, admin, and Paystack billing
-- MVPs you want to ship quickly
+- Auth pages, dashboard, payment API, Paystack webhook, notifications
 
 **Example:**
 ```bash
 genesis create acme -y -t saas-app
 ```
 
-**Required env:** `MONGODB_URI`, `JWT_SECRET`, `PAYSTACK_SECRET_KEY`, `PAYSTACK_PUBLIC_KEY`
-
-**Typical user flow:**
-1. Register → verify email → sign in
-2. Pay via Paystack
-3. Admin manages users at `/dashboard/users`
+**Required env:** `MONGODB_URI`, `JWT_SECRET`, `PAYSTACK_*`
 
 ---
 
@@ -128,50 +121,54 @@ genesis create acme -y -t saas-app
 
 **Purpose:** Online stores with product display, checkout, and admin.
 
-**Default modules:** `payments`, `dashboard`
+**Bundled modules (automatic):** `payments`, `dashboard`
 
-**Template adds:** Replaces `app/page.tsx` with:
-- Product grid (sample products with price and stock)
-- "Add to Cart" buttons (placeholder — wire to your cart logic)
+**Optional add-ons (Customize modules?):** `auth`, `branding`, `uploads`, `notifications`, `analytics`
 
-**Does not include by default:** Auth, branding (add with `genesis add` if needed).
-
-**Module scaffolds also add:**
-- Payment API routes and Paystack webhook
-- Dashboard admin shell
-
-**When to use:**
-- Product catalogs and checkout
-- Stores where admin manages inventory via dashboard
-- Paystack-based payments (NGN default)
+**Template adds to `app/page.tsx`:**
+- Product grid with sample products and Add to Cart placeholders
 
 **Example:**
 ```bash
 genesis create my-store -y -t ecommerce
 ```
 
-**Typical next steps:** Replace sample products, add `genesis add auth` for customer accounts, add `genesis add branding` for theming.
+---
+
+## How Module Selection Works
+
+| Template type | Module picker | Customize? |
+|---------------|---------------|------------|
+| `custom` | Always — pick any modules | N/A |
+| Named templates | Bundled modules installed automatically | Optional — add vetted extras only |
+
+**Interactive flow for named templates:**
+1. Select template
+2. CLI shows bundled modules: *"Includes: Branding"*
+3. *"Customize modules for this template?"* — default **No**
+4. If Yes: required modules are locked; optional add-ons can be checked; blocked modules are hidden
+
+**Non-interactive (`-y`):** Bundled modules only. Override with `-m` — required modules are always included, excluded modules are filtered out.
+
+```bash
+# Informational — branding only (auth ignored even if passed)
+genesis create site -y -t informational-site
+
+# E-commerce + customer auth
+genesis create shop -y -t ecommerce -m auth
+# Installs: payments, dashboard, auth
+```
 
 ---
 
-## Default Modules by Template
+## Bundled Modules by Template
 
-| Template | Pre-selected modules |
-|----------|---------------------|
-| `custom` | *(none)* |
-| `informational-site` | branding |
-| `saas-app` | auth, branding, payments, dashboard |
-| `ecommerce` | payments, dashboard |
-
-In interactive mode you can change module checkboxes after picking a template. In non-interactive mode (`-y`), template defaults apply unless you override with `-m`:
-
-```bash
-# SaaS defaults
-genesis create acme -y -t saas-app
-
-# E-commerce template but add auth
-genesis create shop -t ecommerce -m auth,payments,dashboard
-```
+| Template | Bundled (automatic) | Optional add-ons | Blocked |
+|----------|---------------------|------------------|---------|
+| `custom` | — | all | — |
+| `informational-site` | branding | emails, analytics | auth, payments, dashboard |
+| `saas-app` | auth, branding, payments, dashboard, notifications | emails, uploads, analytics | — |
+| `ecommerce` | payments, dashboard | auth, branding, uploads, notifications, analytics | — |
 
 ---
 
@@ -270,10 +267,9 @@ You can add your own `packages/` later (e.g. `packages/shared-ui`) — Genesis o
 | Your goal | Template |
 |-----------|----------|
 | Landing page, no login | `informational-site` |
-| SaaS with auth + billing + admin | `saas-app` |
+| SaaS with auth + billing + admin + notifications | `saas-app` |
 | Online store | `ecommerce` |
-| API-only, custom stack, or hand-picked modules | `custom` |
-| SaaS + notifications from day one | `saas-app` then `genesis add notifications`, or `custom -m auth,branding,payments,dashboard,notifications` |
+| Hand-picked modules or unusual combinations | `custom` |
 
 ---
 

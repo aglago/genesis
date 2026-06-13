@@ -1,12 +1,12 @@
 import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
-import ora from "ora";
 import { execSync } from "child_process";
 import { isCompatible } from "@genesis/core";
 import { loadAllManifests } from "../utils/manifests.js";
 import { readGenesisConfig } from "../utils/scaffold.js";
 import { findGenesisAppDir } from "../utils/structure.js";
+import { withSpinner } from "../utils/exit.js";
 
 const CORE_VERSION = "0.1.0";
 
@@ -30,9 +30,7 @@ export async function updateCommand(): Promise<void> {
     return;
   }
 
-  const spinner = ora("Updating @genesis/* packages...").start();
-
-  try {
+  await withSpinner("Updating @genesis/* packages...", async (spinner) => {
     const packageJsonPath = path.join(targetDir, "package.json");
     const pkg = await fs.readJson(packageJsonPath);
     const genesisPackages = Object.keys(pkg.dependencies ?? {}).filter((d) => d.startsWith("@genesis/"));
@@ -47,8 +45,5 @@ export async function updateCommand(): Promise<void> {
     spinner.succeed(chalk.green("Modules updated successfully!"));
     console.log(chalk.dim(`  Updated: ${genesisPackages.join(", ")}`));
     console.log(chalk.dim("  Review scaffold diffs if routes changed between versions."));
-  } catch (error) {
-    spinner.fail(chalk.red("Update failed"));
-    throw error;
-  }
+  });
 }

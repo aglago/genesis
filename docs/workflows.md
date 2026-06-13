@@ -25,7 +25,7 @@ cp .env.example .env
 npm install && npm run dev
 ```
 
-**Includes:** auth, branding, payments, dashboard.
+**Includes:** auth, branding, payments, dashboard, notifications.
 
 **Typical user flow:**
 

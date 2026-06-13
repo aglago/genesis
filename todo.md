@@ -56,6 +56,7 @@
 | 2026-06-13 | Paystack Phase 1 payments | Per PRD §6.2; Stripe/Flutterwave deferred |
 | 2026-06-13 | Resend primary email provider | Per PRD §6.4; SendGrid as adapter |
 | 2026-06-13 | `--structure monolith \| monorepo` | Default monolith; interactive prompt + `-s` flag for Turborepo `apps/web` |
+| 2026-06-13 | Template-bound modules | Named templates bundle modules; only `custom` gets full picker; optional Customize for add-ons |
 
 ## Success Metrics
 

@@ -12,6 +12,7 @@ Documentation index for using Genesis. Detailed guides live in the [`docs/`](doc
 | [docs/configuration.md](docs/configuration.md) | Environment variables and `genesis.config.ts` |
 | [docs/workflows.md](docs/workflows.md) | Portfolio, SaaS, e-commerce, incremental setups |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Common errors and fixes |
+| [docs/publishing.md](docs/publishing.md) | Local `--local` linking, Git tags, GitHub Packages |
 
 ## Modules
 
@@ -29,11 +30,11 @@ Documentation index for using Genesis. Detailed guides live in the [`docs/`](doc
 ## Quick Reference
 
 ```bash
-# Create a project
-genesis create my-app
+# Create a project (local monorepo — while packages are unpublished)
+node cli/dist/index.js create my-app --local
 
 # Non-interactive SaaS starter
-genesis create acme -y -t saas-app
+genesis create acme -y -t saas-app --local
 
 # Add a module to an existing project
 genesis add notifications

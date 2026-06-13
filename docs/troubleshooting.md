@@ -48,7 +48,24 @@ See [Payments module](modules/payments.md#webhook).
 
 ## @genesis/* packages not found after create
 
-If you created the project from the Genesis monorepo, run `npm install` from the monorepo root so workspace links resolve. For standalone projects, ensure packages are published or linked locally.
+### Local development (unpublished packages)
+
+Use `--local` when creating the project so dependencies point at the monorepo:
+
+```bash
+node cli/dist/index.js create my-app --local -y -t informational-site
+```
+
+Ensure Genesis packages are built first (`npm run build` from the monorepo root), then `npm install` in the new project.
+
+### Published packages
+
+If you created a project without `--local`, `npm install` expects packages on GitHub Packages. Either:
+
+1. Recreate with `--local`, or
+2. [Publish and configure `.npmrc`](publishing.md)
+
+See [Publishing — local development](publishing.md#local-development-before-publishing).
 
 ---
 

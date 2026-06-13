@@ -1,7 +1,6 @@
 import path from "path";
 import fs from "fs-extra";
 import chalk from "chalk";
-import ora from "ora";
 import { checkbox, input, select, confirm } from "@inquirer/prompts";
 import type { ModuleId } from "@genesis/core";
 import { resolveModuleOrder } from "@genesis/core";
@@ -18,6 +17,14 @@ import {
   resolveAppDir,
   scaffoldMonorepoRoot,
 } from "../utils/structure.js";
+import {
+  getTemplateDefinition,
+  formatModuleList,
+  resolveModulesFromFlag,
+  mergeTemplateModules,
+  getSelectableModulesForTemplate,
+} from "../utils/templates.js";
+import { withSpinner } from "../utils/exit.js";
 
 const MODULE_LABELS: Record<string, string> = {
   auth: "Authentication",
@@ -30,20 +37,89 @@ const MODULE_LABELS: Record<string, string> = {
   analytics: "Analytics",
 };
 
+const ALL_MODULE_IDS: ModuleId[] = [
+  "auth",
+  "branding",
+  "payments",
+  "dashboard",
+  "notifications",
+  "emails",
+  "uploads",
+  "analytics",
+];
+
 export interface CreateOptions {
   template?: string;
   modules?: string;
   structure?: string;
   yes?: boolean;
+  local?: boolean;
+}
+
+async function resolveModules(
+  template: string,
+  options: CreateOptions,
+): Promise<ModuleId[]> {
+  const def = getTemplateDefinition(template);
+
+  if (options.modules) {
+    const flagModules = options.modules.split(",").map((m) => m.trim()) as ModuleId[];
+    return resolveModulesFromFlag(template, flagModules);
+  }
+
+  if (def.freeChoice) {
+    if (options.yes) {
+      return [];
+    }
+    return checkbox({
+      message: "Select modules:",
+      choices: ALL_MODULE_IDS.map((id) => ({
+        name: MODULE_LABELS[id] ?? id,
+        value: id,
+        checked: false,
+      })),
+    });
+  }
+
+  // Named template — bundled modules
+  console.log(chalk.dim(`\n  ${def.description}`));
+  console.log(chalk.dim(`  Includes: ${formatModuleList(def.requiredModules, MODULE_LABELS)}\n`));
+
+  if (options.yes) {
+    return def.requiredModules;
+  }
+
+  const customize = await confirm({
+    message: "Customize modules for this template?",
+    default: false,
+  });
+
+  if (!customize) {
+    return def.requiredModules;
+  }
+
+  const selectable = getSelectableModulesForTemplate(template, ALL_MODULE_IDS);
+
+  const selected = await checkbox({
+    message: "Modules (required modules are locked):",
+    choices: selectable.map((id) => {
+      const isRequired = def.requiredModules.includes(id);
+      return {
+        name: isRequired ? `${MODULE_LABELS[id] ?? id} (required)` : (MODULE_LABELS[id] ?? id),
+        value: id,
+        checked: isRequired,
+        disabled: isRequired ? "Required by this template" : false,
+      };
+    }),
+  });
+
+  return mergeTemplateModules(template, selected as ModuleId[]);
 }
 
 export async function createCommand(name?: string, options: CreateOptions = {}): Promise<void> {
   console.log(chalk.bold("\n  Genesis — Create Project\n"));
 
   const manifests = await loadAllManifests();
-  const mvpModules = manifests.filter((m) =>
-    ["auth", "branding", "payments", "dashboard", "notifications", "emails", "uploads", "analytics"].includes(m.id),
-  );
 
   const projectName =
     name ??
@@ -88,27 +164,7 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
           ],
         });
 
-  const defaultModules: ModuleId[] =
-    template === "saas-app"
-      ? ["auth", "branding", "payments", "dashboard"]
-      : template === "informational-site"
-        ? ["branding"]
-        : template === "ecommerce"
-          ? ["payments", "dashboard"]
-          : [];
-
-  const selectedModules: ModuleId[] = options.modules
-    ? (options.modules.split(",").map((m) => m.trim()) as ModuleId[])
-    : options.yes
-      ? defaultModules
-      : await checkbox({
-          message: "Select modules:",
-          choices: mvpModules.map((m) => ({
-            name: MODULE_LABELS[m.id] ?? m.name,
-            value: m.id,
-            checked: defaultModules.includes(m.id),
-          })),
-        });
+  const selectedModules = await resolveModules(template, options);
 
   const targetDir = path.resolve(process.cwd(), projectName);
   const appDir = resolveAppDir(targetDir, structure);
@@ -121,9 +177,7 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
     }
   }
 
-  const spinner = ora("Creating project...").start();
-
-  try {
+  await withSpinner("Creating project...", async (spinner) => {
     if (structure === "monorepo") {
       await scaffoldMonorepoRoot(projectName, targetDir);
     }
@@ -141,7 +195,7 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
 
     const npmPackages = ["@genesis/core", "@genesis/database", "@genesis/ui", ...selectedManifests.map((m) => m.npmPackage)];
 
-    linkGenesisPackages(appDir, [...new Set(npmPackages)]);
+    linkGenesisPackages(appDir, [...new Set(npmPackages)], { local: options.local });
 
     await writeGenesisConfig(
       appDir,
@@ -159,20 +213,21 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
     await mergeEnvExample(selectedManifests, appDir);
 
     spinner.succeed(chalk.green(`Project ${projectName} created! (${structure})`));
+  });
 
-    console.log(chalk.bold("\n  Next steps:\n"));
-    console.log(`  cd ${projectName}`);
-    if (structure === "monorepo") {
-      console.log("  cp apps/web/.env.example apps/web/.env");
-    } else {
-      console.log("  cp .env.example .env");
-    }
-    console.log("  # Edit .env with your credentials");
-    console.log("  npm install");
-    console.log("  npm run dev");
-    console.log("");
-  } catch (error) {
-    spinner.fail(chalk.red("Failed to create project"));
-    throw error;
+  console.log(chalk.bold("\n  Next steps:\n"));
+  console.log(`  cd ${projectName}`);
+  if (structure === "monorepo") {
+    console.log("  cp apps/web/.env.example apps/web/.env");
+  } else {
+    console.log("  cp .env.example .env");
   }
+  console.log("  # Edit .env with your credentials");
+  if (options.local) {
+    console.log(chalk.dim("  # Local mode: build Genesis packages first if you haven't"));
+    console.log(chalk.dim("  cd .. && npm run build && cd " + projectName));
+  }
+  console.log("  npm install");
+  console.log("  npm run dev");
+  console.log("");
 }

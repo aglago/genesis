@@ -41,12 +41,12 @@ genesis update
 | Monolith (default) | `--structure monolith` | Next.js app at repo root |
 | Monorepo | `--structure monorepo` | Turborepo, app in `apps/web/` |
 
-| Template | Default modules |
-|----------|-----------------|
-| `custom` | none |
-| `informational-site` | branding |
-| `saas-app` | auth, branding, payments, dashboard |
-| `ecommerce` | payments, dashboard |
+| Template | Bundled modules | Module selection |
+|----------|-----------------|------------------|
+| `custom` | none | Full picker always |
+| `informational-site` | branding | Auto; Customize? for emails/analytics. Blocks auth, payments, dashboard |
+| `saas-app` | auth, branding, payments, dashboard, notifications | Auto; Customize? for emails, uploads, analytics |
+| `ecommerce` | payments, dashboard | Auto; Customize? for auth, branding, uploads, etc. |
 
 **Monorepo dev CLI:** `node cli/dist/index.js create my-app` (after `npm run build` at repo root)
 
