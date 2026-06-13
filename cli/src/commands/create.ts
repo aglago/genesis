@@ -9,6 +9,7 @@ import {
   copyScaffoldFiles,
   mergeEnvExample,
   writeGenesisConfig,
+  applyBrandingLayout,
 } from "../utils/scaffold.js";
 import { scaffoldNextJsApp, applyTemplate, linkGenesisPackages } from "../utils/template.js";
 import {
@@ -208,6 +209,11 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
 
     for (const manifest of selectedManifests) {
       await copyScaffoldFiles(manifest, appDir, { force: true });
+    }
+
+    if (selectedModules.includes("branding")) {
+      const layoutName = structure === "monorepo" ? "web" : projectName;
+      await applyBrandingLayout(appDir, layoutName);
     }
 
     await mergeEnvExample(selectedManifests, appDir);

@@ -1,5 +1,40 @@
 # Troubleshooting
 
+## Application error: client-side exception (BrandingProvider)
+
+**Symptom:** Next.js shows *Application error: a client-side exception has occurred* and the console mentions `Cannot read properties of undefined`.
+
+**Cause:** The scaffolded `BrandingProvider` imported `genesis.config` on the client. That file is server-only and breaks in the browser.
+
+**Fix:** Pass branding config from the **server** `app/layout.tsx` as a prop (the CLI does this automatically on new projects):
+
+```tsx
+import { BrandingProvider } from "@/components/genesis/branding-provider";
+import genesisConfig from "../genesis.config";
+import type { BrandingConfig } from "@genesis/branding";
+
+const brandingConfig = (genesisConfig.modules.find((m) => m.id === "branding")?.options ?? {
+  primaryColor: "#000000",
+  logo: "/logo.svg",
+  appName: "My App",
+  fontFamily: "Inter, sans-serif",
+}) as BrandingConfig;
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <BrandingProvider config={brandingConfig}>{children}</BrandingProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Or recreate the project with the latest CLI.
+
+---
+
 ## Database not connected
 
 Call `connectDatabase()` before using any module that reads/writes MongoDB:

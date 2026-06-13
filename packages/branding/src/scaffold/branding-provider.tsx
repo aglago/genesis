@@ -1,15 +1,26 @@
 "use client";
 
 import type { ReactNode } from "react";
+import type { BrandingConfig } from "@genesis/branding";
 import { createTheme, generateCssVariables } from "@genesis/branding";
-import genesisConfig from "../../genesis.config";
 
-const brandingModule = genesisConfig.modules.find((m) => m.id === "branding");
-const config = brandingModule?.options ?? { primaryColor: "#000000", appName: "My App" };
-const theme = createTheme(config as Parameters<typeof createTheme>[0]);
-const cssVars = generateCssVariables(config as Parameters<typeof generateCssVariables>[0]);
+const defaultConfig: BrandingConfig = {
+  primaryColor: "#000000",
+  logo: "/logo.svg",
+  appName: "My App",
+  fontFamily: "Inter, sans-serif",
+};
 
-export function BrandingProvider({ children }: { children: ReactNode }) {
+export function BrandingProvider({
+  children,
+  config = defaultConfig,
+}: {
+  children: ReactNode;
+  config?: BrandingConfig;
+}) {
+  const theme = createTheme(config);
+  const cssVars = generateCssVariables(config);
+
   return (
     <div style={cssVars as React.CSSProperties} data-app-name={theme.appName}>
       {children}

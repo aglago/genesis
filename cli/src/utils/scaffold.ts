@@ -1,7 +1,18 @@
 import fs from "fs-extra";
 import path from "path";
-import type { ModuleManifest } from "@genesis/core";
+import type { ModuleId, ModuleManifest } from "@genesis/core";
 import { getPackageScaffoldDir } from "./manifests.js";
+
+/** Modules that connect to MongoDB at runtime — include DB env vars when any are installed. */
+const DATABASE_MODULE_IDS = new Set<ModuleId>([
+  "auth",
+  "payments",
+  "dashboard",
+  "notifications",
+  "emails",
+  "uploads",
+  "analytics",
+]);
 
 export async function copyScaffoldFiles(
   manifest: ModuleManifest,
@@ -71,10 +82,52 @@ export async function mergeEnvExample(
     }
   }
 
-  lines.add("MONGODB_URI=mongodb://localhost:27017");
-  lines.add("MONGODB_DB_NAME=genesis");
+  const needsDatabase = manifests.some((m) => DATABASE_MODULE_IDS.has(m.id));
+
+  if (needsDatabase) {
+    lines.add("# MongoDB — local default; replace with your Atlas URI in production");
+    lines.add("MONGODB_URI=mongodb://localhost:27017");
+    lines.add("MONGODB_DB_NAME=genesis");
+  }
 
   await fs.writeFile(envPath, Array.from(lines).join("\n") + "\n");
+}
+
+export async function applyBrandingLayout(targetDir: string, projectName: string): Promise<void> {
+  const layoutPath = path.join(targetDir, "app/layout.tsx");
+
+  const content = `import type { Metadata } from "next";
+import "./globals.css";
+import "./globals.branding.css";
+import { BrandingProvider } from "@/components/genesis/branding-provider";
+import genesisConfig from "../genesis.config";
+import type { BrandingConfig } from "@genesis/branding";
+
+export const metadata: Metadata = {
+  title: "${projectName}",
+  description: "Built with Genesis",
+};
+
+const brandingModule = genesisConfig.modules.find((m) => m.id === "branding");
+const brandingConfig = (brandingModule?.options ?? {
+  primaryColor: "#000000",
+  logo: "/logo.svg",
+  appName: "My App",
+  fontFamily: "Inter, sans-serif",
+}) as BrandingConfig;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <BrandingProvider config={brandingConfig}>{children}</BrandingProvider>
+      </body>
+    </html>
+  );
+}
+`;
+
+  await fs.writeFile(layoutPath, content);
 }
 
 export function generateGenesisConfig(

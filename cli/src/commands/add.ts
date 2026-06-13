@@ -9,6 +9,7 @@ import {
   mergeEnvExample,
   writeGenesisConfig,
   readGenesisConfig,
+  applyBrandingLayout,
 } from "../utils/scaffold.js";
 import { linkGenesisPackages } from "../utils/template.js";
 import { findGenesisAppDir } from "../utils/structure.js";
@@ -70,7 +71,11 @@ export async function addCommand(moduleName: string, options: AddOptions = {}): 
     );
 
     const copied = await copyScaffoldFiles(manifest, targetDir);
-    await mergeEnvExample([manifest], targetDir);
+    await mergeEnvExample(allManifests, targetDir);
+
+    if (moduleName === "branding") {
+      await applyBrandingLayout(targetDir, path.basename(targetDir));
+    }
 
     spinner.succeed(chalk.green(`Added ${manifest.name}`));
 
