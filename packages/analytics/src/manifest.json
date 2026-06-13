@@ -1,0 +1,11 @@
+{
+  "id": "analytics",
+  "name": "Analytics",
+  "version": "0.1.0",
+  "description": "Event tracking and dashboard metrics",
+  "npmPackage": "@genesis/analytics",
+  "configImport": "@genesis/analytics/config",
+  "configFactory": "analytics",
+  "envVars": [],
+  "scaffoldFiles": []
+}

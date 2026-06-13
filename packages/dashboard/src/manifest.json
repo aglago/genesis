@@ -1,0 +1,17 @@
+{
+  "id": "dashboard",
+  "name": "Dashboard",
+  "version": "0.1.0",
+  "description": "Admin dashboard with sidebar, tables, and analytics cards",
+  "dependencies": ["auth"],
+  "npmPackage": "@genesis/dashboard",
+  "configImport": "@genesis/dashboard/config",
+  "configFactory": "dashboard",
+  "envVars": [],
+  "scaffoldFiles": [
+    { "source": "scaffold/layout.tsx", "target": "app/(dashboard)/layout.tsx" },
+    { "source": "scaffold/page.tsx", "target": "app/(dashboard)/dashboard/page.tsx" },
+    { "source": "scaffold/users-page.tsx", "target": "app/(dashboard)/dashboard/users/page.tsx" },
+    { "source": "scaffold/settings-page.tsx", "target": "app/(dashboard)/dashboard/settings/page.tsx" }
+  ]
+}

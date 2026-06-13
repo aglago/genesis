@@ -1,0 +1,16 @@
+{
+  "id": "emails",
+  "name": "Emails",
+  "version": "0.1.0",
+  "description": "Transactional emails via Resend or SendGrid",
+  "npmPackage": "@genesis/emails",
+  "configImport": "@genesis/emails/config",
+  "configFactory": "emails",
+  "envVars": [
+    { "key": "RESEND_API_KEY", "description": "Resend API key", "required": false },
+    { "key": "SENDGRID_API_KEY", "description": "SendGrid API key", "required": false }
+  ],
+  "scaffoldFiles": [
+    { "source": "scaffold/preview-route.ts", "target": "app/api/emails/preview/route.ts", "optional": true }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@genesis/emails",
+  "version": "0.1.0",
+  "description": "Genesis emails — transactional email via Resend/SendGrid",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./config": { "types": "./dist/config.d.ts", "import": "./dist/config.js" },
+    "./manifest.json": "./src/manifest.json"
+  },
+  "files": ["dist", "src/manifest.json", "src/scaffold"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@genesis/core": "*",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com" }
+}

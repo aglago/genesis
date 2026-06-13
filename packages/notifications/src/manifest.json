@@ -1,0 +1,15 @@
+{
+  "id": "notifications",
+  "name": "Notifications",
+  "version": "0.1.0",
+  "description": "In-app, email, and SMS notifications",
+  "dependencies": ["auth"],
+  "npmPackage": "@genesis/notifications",
+  "configImport": "@genesis/notifications/config",
+  "configFactory": "notifications",
+  "envVars": [],
+  "scaffoldFiles": [
+    { "source": "scaffold/api-route.ts", "target": "app/api/notifications/route.ts" },
+    { "source": "scaffold/notifications-page.tsx", "target": "app/notifications/page.tsx" }
+  ]
+}

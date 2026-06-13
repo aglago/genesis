@@ -1,0 +1,36 @@
+{
+  "name": "@genesis/dashboard",
+  "version": "0.1.0",
+  "description": "Genesis dashboard — admin sidebar, tables, analytics cards",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./config": { "types": "./dist/config.d.ts", "import": "./dist/config.js" },
+    "./manifest.json": "./src/manifest.json"
+  },
+  "files": ["dist", "src/manifest.json", "src/scaffold"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@genesis/core": "*",
+    "@genesis/ui": "*",
+    "zod": "^3.24.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.2",
+    "react": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com" }
+}

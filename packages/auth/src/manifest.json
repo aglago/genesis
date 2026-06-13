@@ -1,0 +1,21 @@
+{
+  "id": "auth",
+  "name": "Authentication",
+  "version": "0.1.0",
+  "description": "User registration, login, JWT auth, and RBAC",
+  "npmPackage": "@genesis/auth",
+  "configImport": "@genesis/auth/config",
+  "configFactory": "auth",
+  "envVars": [
+    { "key": "JWT_SECRET", "description": "Secret key for JWT signing", "required": true, "example": "your-32-char-minimum-secret-key-here" },
+    { "key": "JWT_EXPIRES_IN", "description": "JWT expiration duration", "required": false, "example": "7d" }
+  ],
+  "scaffoldFiles": [
+    { "source": "scaffold/api-route.ts", "target": "app/api/auth/[...genesis]/route.ts" },
+    { "source": "scaffold/login-page.tsx", "target": "app/(auth)/login/page.tsx" },
+    { "source": "scaffold/register-page.tsx", "target": "app/(auth)/register/page.tsx" },
+    { "source": "scaffold/forgot-password-page.tsx", "target": "app/(auth)/forgot-password/page.tsx" },
+    { "source": "scaffold/verify-email-page.tsx", "target": "app/(auth)/verify-email/page.tsx" },
+    { "source": "scaffold/middleware.ts.snippet", "target": "middleware.genesis-auth.ts" }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "payments",
+  "name": "Payments",
+  "version": "0.1.0",
+  "description": "Paystack payment initialization, verification, and webhooks",
+  "npmPackage": "@genesis/payments",
+  "configImport": "@genesis/payments/config",
+  "configFactory": "payments",
+  "envVars": [
+    { "key": "PAYSTACK_SECRET_KEY", "description": "Paystack secret key", "required": true },
+    { "key": "PAYSTACK_PUBLIC_KEY", "description": "Paystack public key", "required": true },
+    { "key": "PAYSTACK_WEBHOOK_SECRET", "description": "Paystack webhook secret", "required": false }
+  ],
+  "scaffoldFiles": [
+    { "source": "scaffold/initialize-route.ts", "target": "app/api/payments/initialize/route.ts" },
+    { "source": "scaffold/verify-route.ts", "target": "app/api/payments/verify/route.ts" },
+    { "source": "scaffold/webhook-route.ts", "target": "app/api/webhooks/paystack/route.ts" }
+  ]
+}

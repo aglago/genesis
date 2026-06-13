@@ -1,0 +1,14 @@
+node_modules
+dist
+.turbo
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+coverage
+.DS_Store
+*.log
+.next
+out
+test-saas
+test-monorepo

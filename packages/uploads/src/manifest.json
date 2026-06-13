@@ -1,0 +1,17 @@
+{
+  "id": "uploads",
+  "name": "Uploads",
+  "version": "0.1.0",
+  "description": "File and image uploads via Cloudinary or S3",
+  "npmPackage": "@genesis/uploads",
+  "configImport": "@genesis/uploads/config",
+  "configFactory": "uploads",
+  "envVars": [
+    { "key": "CLOUDINARY_CLOUD_NAME", "description": "Cloudinary cloud name", "required": false },
+    { "key": "CLOUDINARY_API_KEY", "description": "Cloudinary API key", "required": false },
+    { "key": "CLOUDINARY_API_SECRET", "description": "Cloudinary API secret", "required": false }
+  ],
+  "scaffoldFiles": [
+    { "source": "scaffold/upload-route.ts", "target": "app/api/uploads/route.ts" }
+  ]
+}

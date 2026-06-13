@@ -1,0 +1,14 @@
+{
+  "id": "branding",
+  "name": "Branding",
+  "version": "0.1.0",
+  "description": "Logo, colors, typography, and app metadata",
+  "npmPackage": "@genesis/branding",
+  "configImport": "@genesis/branding/config",
+  "configFactory": "branding",
+  "envVars": [],
+  "scaffoldFiles": [
+    { "source": "scaffold/branding-provider.tsx", "target": "components/genesis/branding-provider.tsx" },
+    { "source": "scaffold/globals.css.snippet", "target": "app/globals.branding.css" }
+  ]
+}
