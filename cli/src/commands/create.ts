@@ -213,7 +213,9 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
 
     if (selectedModules.includes("branding")) {
       const layoutName = structure === "monorepo" ? "web" : projectName;
-      await applyBrandingLayout(appDir, layoutName);
+      await applyBrandingLayout(appDir, layoutName, {
+        siteHeader: template === "informational-site",
+      });
     }
 
     await mergeEnvExample(selectedManifests, appDir);

@@ -3,11 +3,13 @@
   "private": true,
   "workspaces": [
     "cli",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:www": "npm run dev --workspace=@genesis/www",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",

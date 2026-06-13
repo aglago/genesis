@@ -93,14 +93,25 @@ export async function mergeEnvExample(
   await fs.writeFile(envPath, Array.from(lines).join("\n") + "\n");
 }
 
-export async function applyBrandingLayout(targetDir: string, projectName: string): Promise<void> {
+export async function applyBrandingLayout(
+  targetDir: string,
+  projectName: string,
+  options: { siteHeader?: boolean } = {},
+): Promise<void> {
   const layoutPath = path.join(targetDir, "app/layout.tsx");
+
+  const siteHeaderImport = options.siteHeader
+    ? `import { SiteHeader } from "@/components/site-header";\n`
+    : "";
+  const siteHeaderJsx = options.siteHeader
+    ? `          <SiteHeader appName={brandingConfig.appName} />\n`
+    : "";
 
   const content = `import type { Metadata } from "next";
 import "./globals.css";
 import "./globals.branding.css";
 import { BrandingProvider } from "@/components/genesis/branding-provider";
-import genesisConfig from "../genesis.config";
+${siteHeaderImport}import genesisConfig from "../genesis.config";
 import type { BrandingConfig } from "@genesis/branding";
 
 export const metadata: Metadata = {
@@ -119,8 +130,10 @@ const brandingConfig = (brandingModule?.options ?? {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <BrandingProvider config={brandingConfig}>{children}</BrandingProvider>
+      <body className="min-h-screen font-sans">
+        <BrandingProvider config={brandingConfig}>
+${siteHeaderJsx}          {children}
+        </BrandingProvider>
       </body>
     </html>
   );

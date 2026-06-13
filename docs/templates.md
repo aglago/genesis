@@ -80,7 +80,8 @@ genesis create my-app -t custom -m branding,auth
 
 **Template adds to `app/page.tsx`:**
 - Hero section with headline and CTA
-- Contact form section (`#contact`)
+- Contact form section (`#contact`) using `@genesis/ui` Input, Button, and Textarea
+- `POST /api/contact` route with validation (extend with `@genesis/emails` to deliver messages)
 
 **When to use:**
 - Portfolio, agency site, product landing page

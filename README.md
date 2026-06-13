@@ -36,6 +36,8 @@ The CLI will prompt for:
 
 Then it scaffolds a Next.js app, installs `@genesis/*` packages, copies route files, and merges environment variables.
 
+**Marketing site:** Run `npm run dev:www` to preview the Genesis landing page, docs, and template gallery at [localhost:3001](http://localhost:3001).
+
 **See [docs/quickstart.md](docs/quickstart.md) for detailed examples**, or browse the full [documentation](docs/README.md).
 
 ## CLI Commands

@@ -1,11 +1,12 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import type { Config } from "tailwindcss";
 
-export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs));
-}
-
-export const genesisTailwindPreset = {
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
@@ -30,10 +31,6 @@ export const genesisTailwindPreset = {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -44,16 +41,13 @@ export const genesisTailwindPreset = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
+      },
     },
   },
+  plugins: [require("@tailwindcss/typography")],
 };
 
-export * from "./components/button.js";
-export * from "./components/input.js";
-export * from "./components/textarea.js";
-export * from "./components/code-block.js";
-export * from "./components/card.js";
-export * from "./components/table.js";
-export * from "./components/sidebar.js";
-export * from "./components/dialog.js";
-export * from "./components/toast.js";
+export default config;

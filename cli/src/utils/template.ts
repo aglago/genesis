@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
-import { getTemplatesDir } from "./manifests.js";
+import { getTemplatesDir, getGenesisRoot } from "./manifests.js";
 import { resolveLocalPackageRef } from "./local-packages.js";
 
 export interface LinkGenesisPackagesOptions {
@@ -92,7 +92,12 @@ export default nextConfig;
     `import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  darkMode: ["class"],
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@genesis/ui/dist/**/*.js",
+  ],
   theme: {
     extend: {
       colors: {
@@ -154,6 +159,11 @@ export default config;
 `,
   );
 
+  const themeCss = await fs.readFile(
+    path.join(getGenesisRoot(), "packages/ui/src/styles/genesis-theme.css"),
+    "utf-8",
+  );
+
   await fs.writeFile(
     path.join(targetDir, "app/globals.css"),
     `@tailwind base;
@@ -161,28 +171,21 @@ export default config;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.5rem;
+${themeCss}
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
-`,
+
+@layer components {
+  .genesis-inline-code {
+    @apply relative rounded border bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.8125rem] font-medium text-foreground;
+  }
+}`,
   );
 
   await fs.writeFile(
@@ -198,7 +201,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen font-sans">{children}</body>
     </html>
   );
 }
@@ -209,9 +212,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     path.join(targetDir, "app/page.tsx"),
     `export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">${options.projectName}</h1>
-      <p className="mt-4 text-muted-foreground">Built with Genesis</p>
+    <main className="flex min-h-screen flex-col items-center justify-center px-6">
+      <div className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
+        Built with Genesis
+      </div>
+      <h1 className="mt-6 text-4xl font-bold tracking-tight">${options.projectName}</h1>
+      <p className="mt-4 text-muted-foreground">Your modular Next.js app starts here.</p>
     </main>
   );
 }
