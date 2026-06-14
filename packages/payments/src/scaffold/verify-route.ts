@@ -12,7 +12,16 @@ export async function GET(request: NextRequest) {
 
   const paystack = new PaystackClient(process.env.PAYSTACK_SECRET_KEY!, process.env.PAYSTACK_PUBLIC_KEY!);
   const service = new PaymentService(paystack);
-  const result = await service.verify(reference);
 
-  return NextResponse.json(result);
+  try {
+    const result = await service.verify(reference);
+    return NextResponse.json(result);
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message.includes("fetch failed")
+        ? "Could not reach Paystack to verify this payment. Check your network connection or confirm the order under Dashboard → Orders after the webhook runs."
+        : "Payment verification failed.";
+
+    return NextResponse.json({ error: message }, { status: 503 });
+  }
 }

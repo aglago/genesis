@@ -185,7 +185,7 @@ ${themeCss}
 
 @layer components {
   .genesis-inline-code {
-    @apply relative rounded border bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.8125rem] font-medium text-foreground;
+    @apply border-0 shadow-none;
   }
 }`,
   );
@@ -195,7 +195,7 @@ ${themeCss}
     `import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { PublicThemeToggle } from "@/components/public-theme-toggle";
 
 export const metadata: Metadata = {
   title: "${options.projectName}",
@@ -207,9 +207,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen font-sans">
         <ThemeProvider>
-          <div className="fixed right-4 top-4 z-50">
-            <ThemeToggle />
-          </div>
+          <PublicThemeToggle />
           {children}
         </ThemeProvider>
       </body>

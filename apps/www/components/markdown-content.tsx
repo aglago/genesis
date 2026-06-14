@@ -10,17 +10,30 @@ interface MarkdownContentProps {
   content: string;
 }
 
+function inferCodeLanguage(code: string, language?: string): string | undefined {
+  if (language) return language;
+
+  const trimmed = code.trim();
+  if (/^(npm|npx|pnpm|yarn|bun|node|cd|cp|git|genesis)\b/m.test(trimmed)) {
+    return "bash";
+  }
+
+  return undefined;
+}
+
 function getCodeFromPre(children: ReactNode): { code: string; language?: string } {
-  if (!children || typeof children !== "object" || !("props" in children)) {
+  const child = Array.isArray(children) ? children[0] : children;
+
+  if (!child || typeof child !== "object" || !("props" in child)) {
     return { code: String(children ?? "") };
   }
 
-  const child = children as { props?: { className?: string; children?: string } };
-  const className = child.props?.className ?? "";
+  const props = (child as { props?: { className?: string; children?: string } }).props;
+  const className = props?.className ?? "";
   const language = className.replace("language-", "") || undefined;
-  const code = String(child.props?.children ?? "").replace(/\n$/, "");
+  const code = String(props?.children ?? "").replace(/\n$/, "");
 
-  return { code, language };
+  return { code, language: inferCodeLanguage(code, language) };
 }
 
 export function MarkdownContent({ content }: MarkdownContentProps) {
@@ -40,7 +53,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         "prose-table:text-sm",
         "prose-th:text-foreground prose-th:font-medium",
         "prose-code:before:content-none prose-code:after:content-none",
-        "prose-pre:my-0 prose-pre:p-0 prose-pre:bg-transparent",
+        "prose-code:font-normal",
       )}
     >
       <ReactMarkdown
@@ -49,7 +62,11 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         components={{
           pre: ({ children }) => {
             const { code, language } = getCodeFromPre(children);
-            return <CodeBlock code={code} language={language} />;
+            return (
+              <div className="not-prose">
+                <CodeBlock code={code} language={language} />
+              </div>
+            );
           },
           code: ({ className, children, ...props }) => {
             const isBlock = className?.includes("language-");

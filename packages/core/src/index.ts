@@ -26,6 +26,8 @@ export interface ScaffoldFile {
   source: string;
   target: string;
   optional?: boolean;
+  /** When true, replace an existing file (e.g. dashboard overview when payments is added). */
+  overwrite?: boolean;
 }
 
 export interface ModuleManifest {

@@ -13,6 +13,25 @@ interface CodeBlockProps {
   className?: string;
 }
 
+function TerminalIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" x2="20" y1="19" y2="19" />
+    </svg>
+  );
+}
+
 function CopyIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -94,59 +113,69 @@ export function CodeBlock({ code, language, className }: CodeBlockProps) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  const headerLabel = language ?? "code";
+
   return (
-    <div
+    <figure
       className={cn(
-        "group relative my-6 overflow-hidden rounded-lg border bg-[hsl(var(--code-background))] text-[hsl(var(--code-foreground))]",
+        "not-prose group relative my-6 overflow-hidden rounded-lg border border-border bg-[hsl(var(--code-background))] text-[hsl(var(--code-foreground))]",
         className,
       )}
     >
-      <div className="flex items-center justify-between border-b bg-[hsl(var(--code-header))] px-0">
-        {showTabs ? (
-          <div className="flex items-center gap-0 px-1 pt-1">
-            {PACKAGE_MANAGERS.map((pm) => (
-              <button
-                key={pm}
-                type="button"
-                onClick={() => setActivePm(pm)}
-                className={cn(
-                  "relative rounded-t-sm border border-transparent px-3 py-1.5 font-mono text-xs font-medium transition-colors",
-                  activePm === pm
-                    ? "border-border border-b-[hsl(var(--code-background))] bg-[hsl(var(--code-background))] text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {pm}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <span className="px-4 py-2 font-mono text-xs font-medium text-muted-foreground">
-            {language ?? "code"}
-          </span>
-        )}
+      <figcaption className="flex items-stretch border-b border-border/60 bg-[hsl(var(--code-header))]">
+        <div className="flex min-w-0 flex-1 items-center gap-2 pl-3">
+          <TerminalIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+
+          {showTabs ? (
+            <div className="flex min-w-0 items-end self-stretch pt-1">
+              {PACKAGE_MANAGERS.map((pm) => (
+                <button
+                  key={pm}
+                  type="button"
+                  onClick={() => setActivePm(pm)}
+                  className={cn(
+                    "relative -mb-px rounded-t-md border border-transparent px-3 py-1.5 font-mono text-xs font-medium transition-colors",
+                    activePm === pm
+                      ? "border-border/60 border-b-[hsl(var(--code-background))] bg-[hsl(var(--code-background))] text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {pm}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <span className="py-2.5 font-mono text-xs font-medium text-muted-foreground">{headerLabel}</span>
+          )}
+        </div>
 
         <button
           type="button"
           onClick={copy}
           aria-label={copied ? "Copied" : "Copy code"}
-          className="mr-2 inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
         >
           {copied ? (
-            <span className="text-xs font-medium">✓</span>
+            <span className="text-xs font-medium text-foreground">✓</span>
           ) : (
-            <CopyIcon className="h-4 w-4" />
+            <CopyIcon className="h-3.5 w-3.5" />
           )}
         </button>
-      </div>
+      </figcaption>
 
       <pre className="overflow-x-auto px-4 py-4">
-        <code className="font-mono text-sm leading-relaxed">{displayCode}</code>
+        <code className="font-mono text-[0.8125rem] leading-relaxed text-[hsl(var(--code-foreground))]">
+          {displayCode}
+        </code>
       </pre>
-    </div>
+    </figure>
   );
 }
 
 export function InlineCode({ children }: { children: ReactNode }) {
-  return <code className="genesis-inline-code">{children}</code>;
+  return (
+    <code className="genesis-inline-code relative rounded-md bg-[hsl(var(--inline-code-background))] px-[0.3rem] py-[0.2rem] font-mono text-[0.8125rem] font-normal text-[hsl(var(--inline-code-foreground))]">
+      {children}
+    </code>
+  );
 }

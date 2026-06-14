@@ -8,11 +8,19 @@ export interface StatCard {
 
 export function getDefaultStats(): StatCard[] {
   return [
-    { title: "Total Users", value: "—", description: "Connect @genesis/analytics for live data" },
-    { title: "Revenue", value: "—", description: "Connect @genesis/payments for live data" },
-    { title: "Active Sessions", value: "—", description: "Connect @genesis/analytics for live data" },
-    { title: "Notifications", value: "—", description: "Connect @genesis/notifications for live data" },
+    { title: "Total users", value: "—", description: "Registered accounts" },
+    { title: "Revenue", value: "—", description: "Gross sales" },
+    { title: "Active sessions", value: "—", description: "Users online now" },
+    { title: "Notifications", value: "—", description: "Unread alerts" },
   ];
+}
+
+export function isDashboardNavActive(pathname: string, href: string): boolean {
+  if (href === "/dashboard") {
+    return pathname === "/dashboard";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function getNavItems(config: DashboardConfig) {

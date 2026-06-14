@@ -24,11 +24,16 @@ const DETAILS: Record<string, { command: string; features: string[] }> = {
   },
   ecommerce: {
     command: "genesis create my-store --local -y -t ecommerce",
-    features: ["Payments and checkout flows", "Admin dashboard for orders", "Product catalog starter"],
+    features: [
+      "Buy now buttons wired to Paystack checkout",
+      "Dashboard Orders page with live transaction data",
+      "Branding, payments, and admin shell included",
+      "Optional: auth, uploads, notifications",
+    ],
   },
   custom: {
     command: "genesis create my-app --local -t custom",
-    features: ["Full module picker", "No blocked modules", "Blank home page to customize"],
+    features: ["Branding included on every project", "Full module picker", "Blank home page to customize"],
   },
 };
 

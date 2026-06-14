@@ -12,8 +12,16 @@
     { "key": "PAYSTACK_WEBHOOK_SECRET", "description": "Paystack webhook secret", "required": false }
   ],
   "scaffoldFiles": [
+    { "source": "scaffold/payments-config.ts", "target": "lib/payments-config.ts" },
     { "source": "scaffold/initialize-route.ts", "target": "app/api/payments/initialize/route.ts" },
     { "source": "scaffold/verify-route.ts", "target": "app/api/payments/verify/route.ts" },
-    { "source": "scaffold/webhook-route.ts", "target": "app/api/webhooks/paystack/route.ts" }
+    { "source": "scaffold/webhook-route.ts", "target": "app/api/webhooks/paystack/route.ts" },
+    { "source": "scaffold/payment-callback-page.tsx", "target": "app/payment/callback/page.tsx" },
+    { "source": "scaffold/orders-page.tsx", "target": "app/(dashboard)/dashboard/orders/page.tsx" },
+    {
+      "source": "scaffold/dashboard-page.tsx",
+      "target": "app/(dashboard)/dashboard/page.tsx",
+      "overwrite": true
+    }
   ]
 }

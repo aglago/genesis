@@ -48,7 +48,14 @@ cp .env.example .env
 npm install && npm run dev
 ```
 
-**Includes:** product listing page, payments, dashboard.
+**Includes:** product listing with **Buy now** Paystack checkout, branding, payments, dashboard with **Orders** page.
+
+**Typical test flow:**
+
+1. Set Paystack test keys and MongoDB in `.env`
+2. Open `/`, enter email, click **Buy now** on a product
+3. Complete Paystack test checkout
+4. Confirm order at `/dashboard/orders`
 
 Add products by editing `app/page.tsx` or building product management on top of the dashboard.
 

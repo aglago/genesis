@@ -43,10 +43,10 @@ genesis update
 
 | Template | Bundled modules | Module selection |
 |----------|-----------------|------------------|
-| `custom` | none | Full picker always |
+| `custom` | branding | Full picker; branding always included |
 | `informational-site` | branding | Auto; Customize? for emails/analytics. Blocks auth, payments, dashboard |
 | `saas-app` | auth, branding, payments, dashboard, notifications | Auto; Customize? for emails, uploads, analytics |
-| `ecommerce` | payments, dashboard | Auto; Customize? for auth, branding, uploads, etc. |
+| `ecommerce` | payments, dashboard, branding | Auto; Customize? for auth, uploads, etc. Buy now + Orders UI |
 
 **Monorepo dev CLI:** `node cli/dist/index.js create my-app` (after `npm run build` at repo root)
 

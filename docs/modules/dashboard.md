@@ -31,7 +31,8 @@ None required.
 
 | Route | Page |
 |-------|------|
-| `/dashboard` | Overview with stat cards |
+| `/dashboard` | Overview — live payment stats when `@genesis/payments` is installed |
+| `/dashboard/orders` | Paid and pending transactions (requires `@genesis/payments`) |
 | `/dashboard/users` | User management table |
 | `/dashboard/settings` | General settings form |
 
@@ -54,7 +55,7 @@ export default function CustomAdminPage() {
 
 ## Stat Cards
 
-Placeholder metrics are shown until `@genesis/analytics` and `@genesis/payments` are connected:
+Placeholder metrics are shown until `@genesis/analytics` is connected. When `@genesis/payments` is installed, the overview and **Orders** page show live transaction data from MongoDB.
 
 ```typescript
 import { getDefaultStats } from "@genesis/dashboard";

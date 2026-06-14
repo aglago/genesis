@@ -2,6 +2,8 @@
 
 A Genesis template is a **curated starter** — not a turnkey product.
 
+Every project includes **branding** (`@genesis/branding`) — logo, colors, fonts, and app name via CSS variables. Named templates bundle additional modules; the blank template always includes branding and lets you pick the rest.
+
 When you run `genesis create -t saas-app`, you get:
 
 1. A **base Next.js app** (App Router, TypeScript, Tailwind, dark mode)

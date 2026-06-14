@@ -7,23 +7,32 @@ export interface DialogProps {
   children: ReactNode;
 }
 
-export function Dialog({ children }: DialogProps) {
-  return <>{children}</>;
+export function Dialog({ open, onOpenChange, children }: DialogProps) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <button
+        type="button"
+        aria-label="Close dialog"
+        className="fixed inset-0 bg-black/50"
+        onClick={() => onOpenChange?.(false)}
+      />
+      {children}
+    </div>
+  );
 }
 
 export function DialogContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" />
-      <div
-        className={cn(
-          "relative z-50 w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
+    <div
+      className={cn(
+        "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-6 shadow-lg",
+        className,
+      )}
+      {...props}
+    >
+      {children}
     </div>
   );
 }
@@ -38,4 +47,8 @@ export function DialogTitle({ className, ...props }: HTMLAttributes<HTMLHeadingE
 
 export function DialogDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return <p className={cn("text-sm text-muted-foreground", className)} {...props} />;
+}
+
+export function DialogFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />;
 }

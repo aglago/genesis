@@ -25,8 +25,10 @@
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
     --code-background: 0 0% 100%;
-    --code-foreground: 240 10% 3.9%;
+    --code-foreground: 240 5.3% 26.1%;
     --code-header: 240 4.8% 95.9%;
+    --inline-code-background: 240 4.8% 95.9%;
+    --inline-code-foreground: 240 5.9% 10%;
   }
 
   .dark {
@@ -50,8 +52,10 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
     --code-background: 240 6% 10%;
-    --code-foreground: 0 0% 98%;
-    --code-header: 240 4% 16%;
+    --code-foreground: 240 5% 84%;
+    --code-header: 240 5% 6%;
+    --inline-code-background: 240 4% 16%;
+    --inline-code-foreground: 0 0% 98%;
   }
 
   * {
@@ -66,6 +70,6 @@
 
 @layer components {
   .genesis-inline-code {
-    @apply relative rounded border bg-muted px-[0.3rem] py-[0.2rem] font-mono text-[0.8125rem] font-medium text-foreground;
+    @apply border-0 shadow-none;
   }
 }

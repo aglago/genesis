@@ -25,7 +25,10 @@ describe("template definitions", () => {
     expect(formatTemplateChoiceLabel("saas-app")).toBe(
       "SaaS Starter [auth, branding, payments, dashboard, notifications]",
     );
-    expect(formatTemplateChoiceLabel("custom")).toBe("Blank (custom) [pick modules]");
+    expect(formatTemplateChoiceLabel("custom")).toBe("Blank (custom) [branding]");
+    expect(formatTemplateChoiceLabel("ecommerce")).toBe(
+      "E-commerce [payments, dashboard, branding]",
+    );
   });
 
   it("merges required modules when customizing", () => {
@@ -42,7 +45,13 @@ describe("template definitions", () => {
     const result = resolveModulesFromFlag("ecommerce", ["auth"]);
     expect(result).toContain("payments");
     expect(result).toContain("dashboard");
+    expect(result).toContain("branding");
     expect(result).toContain("auth");
+  });
+
+  it("custom template always includes branding", () => {
+    const result = resolveModulesFromFlag("custom", ["auth"]);
+    expect(result).toEqual(["branding", "auth"]);
   });
 
   it("resolveModulesFromFlag filters excluded on informational", () => {

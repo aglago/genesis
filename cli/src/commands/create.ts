@@ -10,6 +10,7 @@ import {
   mergeEnvExample,
   writeGenesisConfig,
   applyBrandingLayout,
+  buildModuleOptions,
 } from "../utils/scaffold.js";
 import { scaffoldNextJsApp, applyTemplate, linkGenesisPackages } from "../utils/template.js";
 import {
@@ -73,16 +74,17 @@ async function resolveModules(
 
   if (def.freeChoice) {
     if (options.yes) {
-      return [];
+      return def.requiredModules;
     }
-    return checkbox({
+    const selected = await checkbox({
       message: "Select modules:",
       choices: ALL_MODULE_IDS.map((id) => ({
         name: MODULE_LABELS[id] ?? id,
         value: id,
-        checked: false,
+        checked: def.requiredModules.includes(id),
       })),
     });
+    return mergeTemplateModules(template, selected as ModuleId[]);
   }
 
   // Named template — bundled modules
@@ -212,6 +214,7 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
         id: m.id,
         configImport: m.configImport,
         configFactory: m.configFactory,
+        options: buildModuleOptions(m.id, selectedModules as ModuleId[], template),
       })),
     );
 

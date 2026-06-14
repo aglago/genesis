@@ -62,7 +62,7 @@ export async function copyScaffoldFiles(
       throw new Error(`Scaffold source not found: ${sourcePath}`);
     }
 
-    if ((await fs.pathExists(targetPath)) && !options.force) {
+    if ((await fs.pathExists(targetPath)) && !options.force && !file.overwrite) {
       continue;
     }
 
@@ -146,12 +146,10 @@ export async function applyBrandingLayout(
 
   const siteHeaderImport = options.siteHeader
     ? `import { SiteHeader } from "@/components/site-header";\n`
-    : `import { ThemeToggle } from "@/components/theme-toggle";\n`;
+    : `import { PublicThemeToggle } from "@/components/public-theme-toggle";\n`;
   const siteHeaderJsx = options.siteHeader
     ? `          <SiteHeader appName={brandingConfig.appName} />\n`
-    : `          <div className="fixed right-4 top-4 z-50">
-            <ThemeToggle />
-          </div>\n`;
+    : `          <PublicThemeToggle />\n`;
 
   const content = `import type { Metadata } from "next";
 import "./globals.css";
@@ -190,6 +188,42 @@ ${siteHeaderJsx}          {children}
 `;
 
   await fs.writeFile(layoutPath, content);
+}
+
+export function buildModuleOptions(
+  manifestId: ModuleId,
+  selectedModules: ModuleId[],
+  templateId?: string,
+): Record<string, unknown> | undefined {
+  if (manifestId === "payments" && templateId === "ecommerce") {
+    return { provider: "paystack", currency: "GHS" };
+  }
+
+  if (manifestId === "dashboard" && selectedModules.includes("payments")) {
+    const storefrontAdmin = templateId === "ecommerce" || !selectedModules.includes("auth");
+
+    if (storefrontAdmin) {
+      return {
+        title: "Store",
+        navItems: [
+          { label: "Overview", href: "/dashboard" },
+          { label: "Orders", href: "/dashboard/orders" },
+          { label: "Settings", href: "/dashboard/settings" },
+        ],
+      };
+    }
+
+    return {
+      navItems: [
+        { label: "Overview", href: "/dashboard" },
+        { label: "Orders", href: "/dashboard/orders" },
+        { label: "Users", href: "/dashboard/users" },
+        { label: "Settings", href: "/dashboard/settings" },
+      ],
+    };
+  }
+
+  return undefined;
 }
 
 export function generateGenesisConfig(

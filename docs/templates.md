@@ -37,10 +37,10 @@ genesis create my-app -t saas-app --local
 
 | Guide | Bundled modules |
 |-------|-----------------|
-| [Blank (custom)](templates/custom.md) | You choose |
+| [Blank (custom)](templates/custom.md) | `branding` (+ your picks) |
 | [Informational Website](templates/informational-site.md) | `branding` |
 | [SaaS Starter](templates/saas-app.md) | `auth`, `branding`, `payments`, `dashboard`, `notifications` |
-| [E-commerce](templates/ecommerce.md) | `payments`, `dashboard` |
+| [E-commerce](templates/ecommerce.md) | `payments`, `dashboard`, `branding` |
 
 ---
 
@@ -48,10 +48,10 @@ genesis create my-app -t saas-app --local
 
 | | Custom | Informational | SaaS | E-commerce |
 |--|--------|---------------|------|------------|
-| **Bundled modules** | — | branding | auth, branding, payments, dashboard, notifications | payments, dashboard |
-| **Optional add-ons** | all | emails, analytics | emails, uploads, analytics | auth, branding, uploads, notifications, analytics |
+| **Bundled modules** | branding | branding | auth, branding, payments, dashboard, notifications | payments, dashboard, branding |
+| **Optional add-ons** | all except locked | emails, analytics | emails, uploads, analytics | auth, uploads, notifications, analytics, emails |
 | **Blocked modules** | — | auth, payments, dashboard | — | — |
-| **Typical next step** | Add modules | Wire contact email, content | Subscriptions, teams, product UI | Catalog, cart, checkout |
+| **Typical next step** | Add modules | Wire contact email, content | Subscriptions, teams, product UI | Cart, catalog CRUD, auth |
 
 ---
 

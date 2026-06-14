@@ -20,7 +20,7 @@ program
   .argument("[name]", "Project name")
   .option(
     "-t, --template <template>",
-    "Template: custom [pick modules], informational-site [branding], saas-app [auth, ...], ecommerce [payments, dashboard]",
+    "Template: custom [branding], informational-site [branding], saas-app [auth, ...], ecommerce [payments, dashboard, branding]",
   )
   .option("-s, --structure <structure>", "Project structure: monolith (default) or monorepo")
   .option("-m, --modules <modules>", "Comma-separated module list")

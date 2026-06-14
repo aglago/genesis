@@ -10,6 +10,7 @@ import {
   writeGenesisConfig,
   readGenesisConfig,
   applyBrandingLayout,
+  buildModuleOptions,
 } from "../utils/scaffold.js";
 import { linkGenesisPackages } from "../utils/template.js";
 import { findGenesisAppDir } from "../utils/structure.js";
@@ -67,6 +68,7 @@ export async function addCommand(moduleName: string, options: AddOptions = {}): 
         id: m.id,
         configImport: m.configImport,
         configFactory: m.configFactory,
+        options: buildModuleOptions(m.id, allModuleIds),
       })),
     );
 

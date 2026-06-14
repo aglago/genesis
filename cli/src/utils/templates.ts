@@ -19,7 +19,7 @@ export const TEMPLATE_DEFINITIONS: Record<string, TemplateDefinition> = {
     id: "custom",
     name: "Blank (custom)",
     description: "Minimal Next.js app — choose any modules",
-    requiredModules: [],
+    requiredModules: ["branding"],
     freeChoice: true,
   },
   "informational-site": {
@@ -41,9 +41,9 @@ export const TEMPLATE_DEFINITIONS: Record<string, TemplateDefinition> = {
   ecommerce: {
     id: "ecommerce",
     name: "E-commerce",
-    description: "Product catalog, payments, and admin dashboard",
-    requiredModules: ["payments", "dashboard"],
-    optionalModules: ["auth", "branding", "uploads", "notifications", "analytics"],
+    description: "Product catalog, Paystack checkout, and admin orders",
+    requiredModules: ["payments", "dashboard", "branding"],
+    optionalModules: ["auth", "uploads", "notifications", "analytics", "emails"],
     excludedModules: [],
   },
 };
@@ -82,7 +82,7 @@ export function resolveModulesFromFlag(
   const def = getTemplateDefinition(templateId);
 
   if (def.freeChoice) {
-    return flagModules;
+    return [...new Set([...def.requiredModules, ...flagModules])];
   }
 
   const filtered = flagModules.filter((m) => !def.excludedModules?.includes(m));

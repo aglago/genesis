@@ -1,9 +1,9 @@
 # Blank (custom) template
 
 **CLI ID:** `custom`  
-**Label:** Blank (custom) `[pick modules]`
+**Label:** Blank (custom) `[branding]`
 
-The blank template is for developers who want **full control** over which Genesis modules to install. No template-specific landing page — just the base Next.js home page and your module choices.
+The blank template is for developers who want **full control** over which Genesis modules to install beyond branding. No template-specific landing page — just the base Next.js home page and your module choices.
 
 ---
 
@@ -27,15 +27,16 @@ The blank template is for developers who want **full control** over which Genesi
 
 | | Modules |
 |--|---------|
-| **Bundled** | None — you choose |
-| **Optional** | All modules available |
+| **Bundled** | `branding` (every Genesis project) |
+| **Optional** | All other modules — pick at create time |
 | **Blocked** | None |
 
 ```bash
 genesis create my-app -t custom
-# Interactive checkbox: auth, branding, payments, ...
+# Interactive checkbox — branding is pre-selected
 
-genesis create my-app -t custom -m branding,auth -y
+genesis create my-app -t custom -m auth,payments -y
+# branding is always included
 ```
 
 ---
@@ -70,7 +71,7 @@ Replace `app/page.tsx` with your own design.
 
 ## Recommended next steps
 
-1. Run the module picker thoughtfully — start small (`branding` only, or `auth` + `branding`)
+1. Run the module picker thoughtfully — start with bundled `branding`, then add `auth`, `payments`, etc. as needed
 2. Copy `.env.example` → `.env` and fill vars for installed modules
 3. Replace `app/page.tsx` with your app entry point
 4. Add `components/site-header.tsx` if you want marketing navigation
