@@ -62,6 +62,16 @@ export default function TemplatesPage() {
             <section key={template.id} id={template.id} className="scroll-mt-20 border-t pt-16">
               <h2 className="text-2xl font-bold tracking-tight">{template.name}</h2>
               <p className="mt-3 text-muted-foreground">{template.description}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {template.modules.map((mod) => (
+                  <span
+                    key={mod}
+                    className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium leading-none text-muted-foreground"
+                  >
+                    {mod}
+                  </span>
+                ))}
+              </div>
               <ul className="mt-6 space-y-2">
                 {detail.features.map((feature) => (
                   <li key={feature} className="flex gap-2 text-sm text-muted-foreground">
@@ -74,10 +84,16 @@ export default function TemplatesPage() {
                 <CodeBlock code={detail.command} language="bash" />
               </div>
               <Link
-                href="/docs/templates"
+                href={`/docs/templates/${template.id === "custom" ? "custom" : template.id}`}
                 className="mt-4 inline-block text-sm font-medium underline-offset-4 hover:underline"
               >
-                Full template reference →
+                Full template guide →
+              </Link>
+              <Link
+                href="/docs/templates"
+                className="mt-2 block text-sm text-muted-foreground underline-offset-4 hover:underline"
+              >
+                All templates
               </Link>
             </section>
           );

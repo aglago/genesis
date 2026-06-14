@@ -21,6 +21,9 @@ import {
 import {
   getTemplateDefinition,
   formatModuleList,
+  formatTemplateChoiceLabel,
+  formatTemplateModulesBracket,
+  TEMPLATE_SELECT_ORDER,
   resolveModulesFromFlag,
   mergeTemplateModules,
   getSelectableModulesForTemplate,
@@ -157,13 +160,18 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
       ? "saas-app"
       : await select({
           message: "Select template:",
-          choices: [
-            { name: "Blank (custom)", value: "custom" },
-            { name: "Informational Website", value: "informational-site" },
-            { name: "SaaS Starter", value: "saas-app" },
-            { name: "E-commerce", value: "ecommerce" },
-          ],
+          choices: TEMPLATE_SELECT_ORDER.map((id) => ({
+            name: formatTemplateChoiceLabel(id),
+            value: id,
+          })),
         });
+
+  if (options.template) {
+    const def = getTemplateDefinition(template);
+    console.log(
+      chalk.dim(`  ${def.name} ${formatTemplateModulesBracket(def.requiredModules)}\n`),
+    );
+  }
 
   const selectedModules = await resolveModules(template, options);
 
@@ -213,12 +221,13 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
 
     if (selectedModules.includes("branding")) {
       const layoutName = structure === "monorepo" ? "web" : projectName;
+      const templatesWithHeader = ["informational-site", "saas-app", "ecommerce"];
       await applyBrandingLayout(appDir, layoutName, {
-        siteHeader: template === "informational-site",
+        siteHeader: templatesWithHeader.includes(template),
       });
     }
 
-    await mergeEnvExample(selectedManifests, appDir);
+    await mergeEnvExample(selectedManifests, appDir, { dbName: projectName });
 
     spinner.succeed(chalk.green(`Project ${projectName} created! (${structure})`));
   });
@@ -233,7 +242,7 @@ export async function createCommand(name?: string, options: CreateOptions = {}):
   console.log("  # Edit .env with your credentials");
   if (options.local) {
     console.log(chalk.dim("  # Local mode: build Genesis packages first if you haven't"));
-    console.log(chalk.dim("  cd .. && npm run build && cd " + projectName));
+    console.log(chalk.dim("  cd .. && npm run build:packages && cd " + projectName));
   }
   console.log("  npm install");
   console.log("  npm run dev");

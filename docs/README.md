@@ -7,7 +7,7 @@ Practical guides for creating projects, configuring modules, and using Genesis i
 | Guide | Description |
 |-------|-------------|
 | [Quickstart](quickstart.md) | Install Genesis, create your first project |
-| [Templates](templates.md) | Available templates, defaults, monolith vs monorepo |
+| [Templates](templates.md) | Template index — starters, not complete apps; per-template guides in [templates/](templates/) |
 | [CLI Reference](cli.md) | Add, remove, and update modules |
 | [Configuration](configuration.md) | Environment variables and `genesis.config.ts` |
 | [Workflows](workflows.md) | Portfolio, SaaS, e-commerce, and incremental setups |

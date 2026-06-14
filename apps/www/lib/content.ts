@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { DOC_NAV, MODULE_NAV } from "./docs-nav";
+import { DOC_NAV, MODULE_NAV, TEMPLATE_DOC_NAV } from "./docs-nav";
 
 export type { DocNavItem } from "./docs-nav";
-export { DOC_NAV, MODULE_NAV, TEMPLATE_PREVIEWS } from "./docs-nav";
+export { DOC_NAV, MODULE_NAV, TEMPLATE_DOC_NAV, TEMPLATE_PREVIEWS } from "./docs-nav";
 
 const DOCS_ROOT = path.join(process.cwd(), "..", "..", "docs");
 
@@ -60,6 +60,6 @@ export function getDocContent(slug: string): string | null {
 }
 
 export function getTitle(slug: string): string {
-  const all = [...DOC_NAV, ...MODULE_NAV];
-  return all.find((d) => d.slug === slug)?.title ?? slug;
+  const all = [...DOC_NAV, ...TEMPLATE_DOC_NAV, ...MODULE_NAV];
+  return all.find((d) => d.slug === slug)?.title ?? slug.split("/").pop() ?? slug;
 }

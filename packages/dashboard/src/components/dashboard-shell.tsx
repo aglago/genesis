@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Sidebar, SidebarHeader, SidebarContent, SidebarNav, SidebarNavItem, SidebarFooter } from "@genesis/ui";
 import type { DashboardConfig } from "../config.js";
 
+/** @deprecated Use the scaffolded `@/components/dashboard-shell` in your app for the full responsive shell. */
 export function DashboardShell({
   config,
   children,

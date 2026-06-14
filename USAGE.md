@@ -7,7 +7,7 @@ Documentation index for using Genesis. Detailed guides live in the [`docs/`](doc
 | Guide | Description |
 |-------|-------------|
 | [docs/quickstart.md](docs/quickstart.md) | Install Genesis, create your first project |
-| [docs/templates.md](docs/templates.md) | Templates, defaults, monolith vs monorepo |
+| [docs/templates.md](docs/templates.md) | Template index — what each starter includes and how to extend it |
 | [docs/cli.md](docs/cli.md) | Add, remove, and update modules |
 | [docs/configuration.md](docs/configuration.md) | Environment variables and `genesis.config.ts` |
 | [docs/workflows.md](docs/workflows.md) | Portfolio, SaaS, e-commerce, incremental setups |

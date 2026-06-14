@@ -39,3 +39,7 @@ export function getTemplatesDir(): string {
 export function getGenesisRoot(): string {
   return MONOREPO_ROOT;
 }
+
+export function getCliScaffoldDir(): string {
+  return path.join(MONOREPO_ROOT, "cli", "scaffold");
+}

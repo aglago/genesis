@@ -37,11 +37,44 @@ Or recreate the project with the latest CLI.
 
 ## Database not connected
 
+**Symptom:** `500` on `/api/auth/register` or error: *Database not connected. Call connectDatabase() first.*
+
+**Cause:** API routes must connect before using MongoDB-backed services. Older scaffolds instantiated `AuthService` at import time — recreate the project or update `@genesis/database` and the auth route scaffold.
+
 Call `connectDatabase()` before using any module that reads/writes MongoDB:
 
 ```typescript
 import { connectDatabase } from "@genesis/database";
 await connectDatabase();
+```
+
+---
+
+## MongoDB connection refused
+
+**Symptom:** `503` or errors mentioning `ECONNREFUSED` / `MongoServerSelectionError`.
+
+**Cause:** `mongodb://localhost:27017` only works when a **MongoDB server is running** on your machine. Genesis does not start MongoDB for you.
+
+**Fix (macOS with Homebrew):**
+
+```bash
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+**Fix (Docker):**
+
+```bash
+docker run -d -p 27017:27017 --name mongo mongo:7
+```
+
+Then confirm `.env` matches your project database name (see `.env.example`):
+
+```env
+MONGODB_URI=mongodb://localhost:27017/my-app
+MONGODB_DB_NAME=my-app
 ```
 
 ---
@@ -91,7 +124,7 @@ Use `--local` when creating the project so dependencies point at the monorepo:
 node cli/dist/index.js create my-app --local -y -t informational-site
 ```
 
-Ensure Genesis packages are built first (`npm run build` from the monorepo root), then `npm install` in the new project.
+Ensure Genesis packages are built first (`npm run build:packages` from the monorepo root), then `npm install` in the new project.
 
 ### Published packages
 

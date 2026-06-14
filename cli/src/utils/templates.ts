@@ -57,6 +57,23 @@ export function formatModuleList(modules: ModuleId[], labels: Record<string, str
   return modules.map((id) => labels[id] ?? id).join(", ");
 }
 
+export function formatTemplateModulesBracket(modules: ModuleId[]): string {
+  if (modules.length === 0) return "[pick modules]";
+  return `[${modules.join(", ")}]`;
+}
+
+export function formatTemplateChoiceLabel(templateId: string): string {
+  const def = getTemplateDefinition(templateId);
+  return `${def.name} ${formatTemplateModulesBracket(def.requiredModules)}`;
+}
+
+export const TEMPLATE_SELECT_ORDER = [
+  "custom",
+  "informational-site",
+  "saas-app",
+  "ecommerce",
+] as const satisfies readonly string[];
+
 /** Merge CLI -m modules with template required; filter excluded. */
 export function resolveModulesFromFlag(
   templateId: string,

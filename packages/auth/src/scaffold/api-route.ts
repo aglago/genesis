@@ -1,24 +1,61 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AuthService, registerSchema, loginSchema } from "@genesis/auth";
+import { AuthService, registerSchema, loginSchema, buildVerifyUrl, sendVerificationEmail } from "@genesis/auth";
 import { connectDatabase } from "@genesis/database";
 
-const authService = new AuthService({
-  jwtSecret: process.env.JWT_SECRET!,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
-  requireEmailVerification: true,
-});
+function createAuthService() {
+  return new AuthService({
+    jwtSecret: process.env.JWT_SECRET!,
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
+    requireEmailVerification: true,
+  });
+}
 
-export async function POST(request: NextRequest, { params }: { params: { genesis: string[] } }) {
-  await connectDatabase();
-  const action = params.genesis?.[0];
-  const body = await request.json();
+function databaseErrorResponse(error: unknown) {
+  const message = error instanceof Error ? error.message : "Unknown error";
+  const isConnectionError =
+    message.includes("ECONNREFUSED") ||
+    message.includes("connect") ||
+    message.includes("MongoServerSelectionError");
 
+  return NextResponse.json(
+    {
+      error: isConnectionError
+        ? "Database unavailable. Start MongoDB locally or check MONGODB_URI in .env"
+        : message,
+    },
+    { status: isConnectionError ? 503 : 400 },
+  );
+}
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ genesis: string[] }> }) {
   try {
+    await connectDatabase();
+    const { genesis } = await params;
+    const action = genesis?.[0];
+    const body = await request.json();
+    const authService = createAuthService();
+
     switch (action) {
       case "register": {
         const input = registerSchema.parse(body);
         const result = await authService.register(input);
-        return NextResponse.json({ success: true, userId: result.user._id });
+        const verifyUrl = buildVerifyUrl(request, result.verificationToken ?? "");
+        const emailSent = result.verificationToken
+          ? await sendVerificationEmail(input.email, verifyUrl)
+          : false;
+
+        if (!emailSent && result.verificationToken && process.env.NODE_ENV === "development") {
+          console.log(`[genesis/auth] Verification link for ${input.email}: ${verifyUrl}`);
+        }
+
+        return NextResponse.json({
+          success: true,
+          userId: result.user._id,
+          emailSent,
+          ...(process.env.NODE_ENV === "development" && !emailSent && result.verificationToken
+            ? { verifyUrl }
+            : {}),
+        });
       }
       case "login": {
         const input = loginSchema.parse(body);
@@ -43,7 +80,6 @@ export async function POST(request: NextRequest, { params }: { params: { genesis
         return NextResponse.json({ error: "Unknown action" }, { status: 404 });
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return databaseErrorResponse(error);
   }
 }

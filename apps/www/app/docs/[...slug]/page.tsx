@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import { DocsToc } from "@/components/docs-toc";
 import { MarkdownContent } from "@/components/markdown-content";
-import { DOC_NAV, MODULE_NAV, extractHeadings, getDocContent, getTitle } from "@/lib/content";
+import { DOC_NAV, TEMPLATE_DOC_NAV, MODULE_NAV, extractHeadings, getDocContent, getTitle } from "@/lib/content";
 
 interface DocPageProps {
   params: Promise<{ slug: string[] }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = [...DOC_NAV, ...MODULE_NAV].map((d) => ({
+  const slugs = [...DOC_NAV, ...TEMPLATE_DOC_NAV, ...MODULE_NAV].map((d) => ({
     slug: d.slug.split("/"),
   }));
   return slugs;

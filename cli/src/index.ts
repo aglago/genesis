@@ -18,7 +18,10 @@ program
   .command("create")
   .description("Create a new Genesis project")
   .argument("[name]", "Project name")
-  .option("-t, --template <template>", "Template name (custom, informational-site, saas-app, ecommerce)")
+  .option(
+    "-t, --template <template>",
+    "Template: custom [pick modules], informational-site [branding], saas-app [auth, ...], ecommerce [payments, dashboard]",
+  )
   .option("-s, --structure <structure>", "Project structure: monolith (default) or monorepo")
   .option("-m, --modules <modules>", "Comma-separated module list")
   .option("-y, --yes", "Use defaults without prompts")

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@genesis/ui";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@genesis/ui";
 
 export default function VerifyEmailPage() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -23,12 +24,28 @@ export default function VerifyEmailPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center px-6">
       <Card className="w-full max-w-md">
-        <CardContent className="pt-6">
-          {status === "loading" && <p>Verifying your email...</p>}
-          {status === "success" && <p>Email verified! You can now sign in.</p>}
-          {status === "error" && <p>Verification failed. The link may be invalid or expired.</p>}
+        <CardHeader>
+          <CardTitle>
+            {status === "loading" && "Verifying email"}
+            {status === "success" && "Email verified"}
+            {status === "error" && "Verification failed"}
+          </CardTitle>
+          {status === "success" && (
+            <CardDescription>Your account is active. You can sign in now.</CardDescription>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {status === "loading" && <p className="text-muted-foreground">Please wait...</p>}
+          {status === "error" && (
+            <p className="text-muted-foreground">The link may be invalid or expired. Try registering again or contact support.</p>
+          )}
+          {status !== "loading" && (
+            <Link href="/login" className="block">
+              <Button className="w-full">{status === "success" ? "Sign in" : "Back to sign in"}</Button>
+            </Link>
+          )}
         </CardContent>
       </Card>
     </div>

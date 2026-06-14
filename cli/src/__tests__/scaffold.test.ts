@@ -47,11 +47,11 @@ describe("mergeEnvExample", () => {
 
   it("includes local MongoDB defaults when database modules are installed", async () => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), "genesis-env-"));
-    await mergeEnvExample(withAuth, dir);
+    await mergeEnvExample(withAuth, dir, { dbName: "my-saas" });
 
     const content = await fs.readFile(path.join(dir, ".env.example"), "utf-8");
-    expect(content).toContain("MONGODB_URI=mongodb://localhost:27017");
-    expect(content).toContain("MONGODB_DB_NAME=genesis");
+    expect(content).toContain("MONGODB_URI=mongodb://localhost:27017/my-saas");
+    expect(content).toContain("MONGODB_DB_NAME=my-saas");
     expect(content).toContain("JWT_SECRET=change-me");
 
     await fs.remove(dir);

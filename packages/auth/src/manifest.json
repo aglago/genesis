@@ -12,6 +12,8 @@
   ],
   "scaffoldFiles": [
     { "source": "scaffold/api-route.ts", "target": "app/api/auth/[...genesis]/route.ts" },
+    { "source": "scaffold/session-route.ts", "target": "app/api/auth/session/route.ts" },
+    { "source": "scaffold/logout-route.ts", "target": "app/api/auth/logout/route.ts" },
     { "source": "scaffold/login-page.tsx", "target": "app/(auth)/login/page.tsx" },
     { "source": "scaffold/register-page.tsx", "target": "app/(auth)/register/page.tsx" },
     { "source": "scaffold/forgot-password-page.tsx", "target": "app/(auth)/forgot-password/page.tsx" },

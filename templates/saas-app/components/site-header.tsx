@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteHeaderAuth } from "@/components/site-header-auth";
 
 export function SiteHeader({ appName }: { appName: string }) {
   const pathname = usePathname();
@@ -17,10 +18,8 @@ export function SiteHeader({ appName }: { appName: string }) {
         <Link href="/" className="font-semibold tracking-tight">
           {appName}
         </Link>
-        <nav className="flex items-center gap-3 sm:gap-4 text-sm">
-          <Link href="/#contact" className="text-muted-foreground transition-colors hover:text-foreground">
-            Contact
-          </Link>
+        <nav className="flex items-center gap-3 sm:gap-4">
+          <SiteHeaderAuth />
           <ThemeToggle />
         </nav>
       </div>

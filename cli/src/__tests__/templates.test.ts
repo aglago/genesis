@@ -4,6 +4,7 @@ import {
   resolveModulesFromFlag,
   mergeTemplateModules,
   getSelectableModulesForTemplate,
+  formatTemplateChoiceLabel,
 } from "../utils/templates.js";
 
 describe("template definitions", () => {
@@ -20,8 +21,11 @@ describe("template definitions", () => {
     expect(def.requiredModules).toContain("auth");
   });
 
-  it("custom allows free choice", () => {
-    expect(getTemplateDefinition("custom").freeChoice).toBe(true);
+  it("formats template choice labels with bundled modules", () => {
+    expect(formatTemplateChoiceLabel("saas-app")).toBe(
+      "SaaS Starter [auth, branding, payments, dashboard, notifications]",
+    );
+    expect(formatTemplateChoiceLabel("custom")).toBe("Blank (custom) [pick modules]");
   });
 
   it("merges required modules when customizing", () => {

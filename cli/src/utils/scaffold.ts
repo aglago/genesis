@@ -14,6 +14,37 @@ const DATABASE_MODULE_IDS = new Set<ModuleId>([
   "analytics",
 ]);
 
+export function sanitizeDbName(name: string): string {
+  const sanitized = name.toLowerCase().replace(/[^a-z0-9_-]/g, "_");
+  return sanitized || "genesis";
+}
+
+/** Resolve MongoDB database name from existing env or project layout. */
+export async function resolveProjectDbName(appDir: string): Promise<string> {
+  const envPath = path.join(appDir, ".env.example");
+  if (await fs.pathExists(envPath)) {
+    const content = await fs.readFile(envPath, "utf-8");
+    const match = content.match(/^MONGODB_DB_NAME=(.+)$/m);
+    if (match?.[1]) {
+      return match[1].trim();
+    }
+  }
+
+  const monorepoRoot = path.join(appDir, "..", "..", "package.json");
+  if (await fs.pathExists(monorepoRoot)) {
+    try {
+      const pkg = (await fs.readJson(monorepoRoot)) as { name?: string };
+      if (pkg.name && pkg.name !== "web") {
+        return sanitizeDbName(pkg.name);
+      }
+    } catch {
+      // fall through
+    }
+  }
+
+  return sanitizeDbName(path.basename(appDir));
+}
+
 export async function copyScaffoldFiles(
   manifest: ModuleManifest,
   targetDir: string,
@@ -63,6 +94,7 @@ export async function removeScaffoldFiles(
 export async function mergeEnvExample(
   manifests: ModuleManifest[],
   targetDir: string,
+  options: { dbName?: string } = {},
 ): Promise<void> {
   const envPath = path.join(targetDir, ".env.example");
   let existing = "";
@@ -71,7 +103,17 @@ export async function mergeEnvExample(
     existing = await fs.readFile(envPath, "utf-8");
   }
 
-  const lines = new Set(existing.split("\n").filter(Boolean));
+  const lines = new Set(
+    existing
+      .split("\n")
+      .filter(
+        (line) =>
+          Boolean(line) &&
+          !line.startsWith("MONGODB_URI=") &&
+          !line.startsWith("MONGODB_DB_NAME=") &&
+          !line.includes("MongoDB —"),
+      ),
+  );
 
   for (const manifest of manifests) {
     for (const envVar of manifest.envVars) {
@@ -85,9 +127,11 @@ export async function mergeEnvExample(
   const needsDatabase = manifests.some((m) => DATABASE_MODULE_IDS.has(m.id));
 
   if (needsDatabase) {
-    lines.add("# MongoDB — local default; replace with your Atlas URI in production");
-    lines.add("MONGODB_URI=mongodb://localhost:27017");
-    lines.add("MONGODB_DB_NAME=genesis");
+    const dbName = sanitizeDbName(options.dbName ?? (await resolveProjectDbName(targetDir)));
+    lines.add("# MongoDB — start local MongoDB first (e.g. brew services start mongodb-community)");
+    lines.add("# Replace with your Atlas URI in production");
+    lines.add(`MONGODB_URI=mongodb://localhost:27017/${dbName}`);
+    lines.add(`MONGODB_DB_NAME=${dbName}`);
   }
 
   await fs.writeFile(envPath, Array.from(lines).join("\n") + "\n");
@@ -102,15 +146,18 @@ export async function applyBrandingLayout(
 
   const siteHeaderImport = options.siteHeader
     ? `import { SiteHeader } from "@/components/site-header";\n`
-    : "";
+    : `import { ThemeToggle } from "@/components/theme-toggle";\n`;
   const siteHeaderJsx = options.siteHeader
     ? `          <SiteHeader appName={brandingConfig.appName} />\n`
-    : "";
+    : `          <div className="fixed right-4 top-4 z-50">
+            <ThemeToggle />
+          </div>\n`;
 
   const content = `import type { Metadata } from "next";
 import "./globals.css";
 import "./globals.branding.css";
 import { BrandingProvider } from "@/components/genesis/branding-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 ${siteHeaderImport}import genesisConfig from "../genesis.config";
 import type { BrandingConfig } from "@genesis/branding";
 
@@ -129,11 +176,13 @@ const brandingConfig = (brandingModule?.options ?? {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen font-sans">
-        <BrandingProvider config={brandingConfig}>
+        <ThemeProvider>
+          <BrandingProvider config={brandingConfig}>
 ${siteHeaderJsx}          {children}
-        </BrandingProvider>
+          </BrandingProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

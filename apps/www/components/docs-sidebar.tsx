@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@genesis/ui";
-import { DOC_NAV, MODULE_NAV, type DocNavItem } from "@/lib/docs-nav";
+import { DOC_NAV, MODULE_NAV, TEMPLATE_DOC_NAV, type DocNavItem } from "@/lib/docs-nav";
 
 function NavSection({ title, items }: { title: string; items: DocNavItem[] }) {
   const pathname = usePathname();
@@ -46,6 +46,9 @@ export function DocsSidebar() {
         <NavSection title="Getting Started" items={DOC_NAV.slice(0, 3)} />
         <div className="mt-8">
           <NavSection title="Guides" items={DOC_NAV.slice(3)} />
+        </div>
+        <div className="mt-8">
+          <NavSection title="Templates" items={TEMPLATE_DOC_NAV} />
         </div>
         <div className="mt-8">
           <NavSection title="Modules" items={MODULE_NAV} />

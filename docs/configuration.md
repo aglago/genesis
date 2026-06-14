@@ -11,8 +11,8 @@ cp .env.example .env
 ### Core (database-backed modules)
 
 ```env
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DB_NAME=genesis
+MONGODB_URI=mongodb://localhost:27017/my-app
+MONGODB_DB_NAME=my-app
 ```
 
 ### Auth

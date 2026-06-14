@@ -14,7 +14,7 @@ export function resolveLocalPackageRef(targetDir: string, packageName: string): 
   if (!fs.existsSync(path.join(packageDir, "package.json"))) {
     throw new Error(
       `Local package not found: ${packageName} (expected at ${packageDir}). ` +
-        "Run npm run build from the Genesis monorepo root.",
+        "Run npm run build:packages from the Genesis monorepo root.",
     );
   }
 

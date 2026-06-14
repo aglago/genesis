@@ -19,7 +19,7 @@ Enable developers to create production-ready web applications in minutes by asse
 ```bash
 # From the Genesis monorepo (development)
 npm install
-npm run build
+npm run build:packages
 
 # Create a new project (link local packages while unpublished)
 node cli/dist/index.js create my-app --local
@@ -113,7 +113,7 @@ genesis/
 | [docs/quickstart.md](docs/quickstart.md) | Install and create your first project |
 | [docs/cli.md](docs/cli.md) | CLI commands reference |
 | [docs/configuration.md](docs/configuration.md) | Env vars and `genesis.config.ts` |
-| [docs/templates.md](docs/templates.md) | Template reference and project structure |
+| [docs/templates.md](docs/templates.md) | Template index and links to per-template guides |
 | [docs/workflows.md](docs/workflows.md) | Common project setups |
 | [docs/modules/](docs/modules/) | Per-module usage guides |
 | [docs/agent-skill.md](docs/agent-skill.md) | Install the Genesis AI agent skill |
@@ -123,7 +123,8 @@ genesis/
 
 ```bash
 npm install
-npm run build      # Build all packages
+npm run build:packages  # packages + CLI (excludes marketing site)
+npm run build:all       # everything, including apps/www
 npm run test       # Run tests
 npm run typecheck  # Type check
 ```

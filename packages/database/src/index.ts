@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { MongoClient, Db, Collection, Document, Filter, OptionalUnlessRequiredId } from "mongodb";
+import {
+  MongoClient,
+  Db,
+  Collection,
+  Document,
+  Filter,
+  ObjectId,
+  OptionalUnlessRequiredId,
+  UpdateFilter,
+} from "mongodb";
 
 export const databaseEnvSchema = z.object({
   MONGODB_URI: z.string().min(1, "MONGODB_URI is required"),
@@ -31,6 +40,36 @@ export async function disconnectDatabase(): Promise<void> {
   }
 }
 
+export function parseDocumentId(id: string): ObjectId {
+  if (!ObjectId.isValid(id)) {
+    throw new Error(`Invalid document id: ${id}`);
+  }
+  return new ObjectId(id);
+}
+
+function buildUpdateQuery<T extends Document>(data: Partial<T>): UpdateFilter<T> {
+  const $set: Record<string, unknown> = {};
+  const $unset: Record<string, ""> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value === undefined) {
+      $unset[key] = "";
+    } else {
+      $set[key] = value;
+    }
+  }
+
+  const update: UpdateFilter<T> = {};
+  if (Object.keys($set).length > 0) {
+    update.$set = $set as Partial<T>;
+  }
+  if (Object.keys($unset).length > 0) {
+    update.$unset = $unset as UpdateFilter<T>["$unset"];
+  }
+
+  return update;
+}
+
 export function getDb(): Db {
   if (!db) {
     throw new Error("Database not connected. Call connectDatabase() first.");
@@ -39,14 +78,14 @@ export function getDb(): Db {
 }
 
 export abstract class BaseRepository<T extends Document> {
-  protected collection: Collection<T>;
+  constructor(private collectionName: string) {}
 
-  constructor(collectionName: string) {
-    this.collection = getDb().collection<T>(collectionName);
+  protected get collection(): Collection<T> {
+    return getDb().collection<T>(this.collectionName);
   }
 
   async findById(id: string): Promise<T | null> {
-    return this.collection.findOne({ _id: id } as Filter<T>) as Promise<T | null>;
+    return this.collection.findOne({ _id: parseDocumentId(id) } as Filter<T>) as Promise<T | null>;
   }
 
   async findOne(filter: Partial<T>): Promise<T | null> {
@@ -63,12 +102,15 @@ export abstract class BaseRepository<T extends Document> {
   }
 
   async update(id: string, data: Partial<T>): Promise<boolean> {
-    const result = await this.collection.updateOne({ _id: id } as Filter<T>, { $set: data });
-    return result.modifiedCount > 0;
+    const result = await this.collection.updateOne(
+      { _id: parseDocumentId(id) } as Filter<T>,
+      buildUpdateQuery(data),
+    );
+    return result.matchedCount > 0;
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = await this.collection.deleteOne({ _id: id } as Filter<T>);
+    const result = await this.collection.deleteOne({ _id: parseDocumentId(id) } as Filter<T>);
     return result.deletedCount > 0;
   }
 

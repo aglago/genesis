@@ -12,7 +12,7 @@ Use this while Genesis is still private / unpublished:
 git clone <your-genesis-repo>
 cd genesis
 npm install
-npm run build
+npm run build:packages
 ```
 
 Create projects with the local CLI and **`--local`** so `@genesis/*` packages link from disk (no registry):
@@ -62,7 +62,7 @@ You will be prompted for:
 
 1. **Project name** — e.g. `my-app`
 2. **Project structure** — monolith (default) or Turborepo monorepo
-3. **Template** — blank, informational site, SaaS, or e-commerce ([details](templates.md))
+3. **Template** — blank, informational site, SaaS, or e-commerce ([index](templates.md) · [SaaS guide](templates/saas-app.md))
 4. **Modules** — only for **`custom`** (full picker), or optional **Customize modules?** for named templates
 
 Example session (informational site):
@@ -112,7 +112,7 @@ genesis create my-store -y -t ecommerce
 | Flag | Description |
 |------|-------------|
 | `-y, --yes` | Use template defaults without prompts (structure defaults to monolith) |
-| `-s, --structure <type>` | `monolith` (default) or `monorepo` — see [Templates](templates.md#project-structure-monolith-vs-monorepo) |
+| `-s, --structure <type>` | `monolith` (default) or `monorepo` — see [Project structure](templates/project-structure.md) |
 | `-t, --template <name>` | `custom`, `informational-site`, `saas-app`, `ecommerce` — see [Templates](templates.md) |
 | `-m, --modules <list>` | Comma-separated module IDs, e.g. `auth,branding,payments` |
 | `-l, --local` | Link `@genesis/*` from the local monorepo (`file:` paths) — see [Publishing](publishing.md#local-development-before-publishing) |
@@ -147,7 +147,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Next Steps
 
-- [Templates reference](templates.md) — what each template includes and default modules
+- [Templates index](templates.md) — starters vs complete apps; [SaaS](templates/saas-app.md), [Informational](templates/informational-site.md), [E-commerce](templates/ecommerce.md)
 - [Configure environment variables](configuration.md#environment-variables)
 - [Set up genesis.config.ts](configuration.md#genesisconfigts)
 - [Add or remove modules](cli.md)

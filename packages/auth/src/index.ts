@@ -134,11 +134,15 @@ export class AuthService {
       throw new Error("Invalid verification token");
     }
 
-    await this.users.update(String(user._id), {
+    const updated = await this.users.update(String(user._id), {
       emailVerified: true,
       verificationToken: undefined,
       updatedAt: new Date(),
     } as Partial<UserDocument>);
+
+    if (!updated) {
+      throw new Error("Failed to verify email");
+    }
 
     return user;
   }
@@ -185,3 +189,4 @@ export class AuthService {
 }
 
 export * from "./config.js";
+export * from "./verification-email.js";

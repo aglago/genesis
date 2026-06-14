@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { execSync } from "child_process";
-import { getTemplatesDir, getGenesisRoot } from "./manifests.js";
+import { getTemplatesDir, getGenesisRoot, getCliScaffoldDir } from "./manifests.js";
 import { resolveLocalPackageRef } from "./local-packages.js";
 
 export interface LinkGenesisPackagesOptions {
@@ -34,6 +34,7 @@ export async function scaffoldNextJsApp(options: NextJsTemplateOptions): Promise
       next: "^15.1.0",
       react: "^19.0.0",
       "react-dom": "^19.0.0",
+      "next-themes": "^0.4.4",
       "@genesis/core": "*",
     },
     devDependencies: {
@@ -97,6 +98,7 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@genesis/ui/dist/**/*.js",
+    "./node_modules/@genesis/dashboard/dist/**/*.js",
   ],
   theme: {
     extend: {
@@ -192,6 +194,8 @@ ${themeCss}
     path.join(targetDir, "app/layout.tsx"),
     `import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
   title: "${options.projectName}",
@@ -200,8 +204,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen font-sans">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen font-sans">
+        <ThemeProvider>
+          <div className="fixed right-4 top-4 z-50">
+            <ThemeToggle />
+          </div>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
@@ -226,6 +237,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   await fs.writeFile(path.join(targetDir, "next-env.d.ts"), `/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n`);
   await fs.writeFile(path.join(targetDir, ".gitignore"), "node_modules\n.next\n.env\n.env.local\n");
+
+  const scaffoldDir = getCliScaffoldDir();
+  await fs.copy(path.join(scaffoldDir, "components"), path.join(targetDir, "components"));
 }
 
 export async function applyTemplate(templateName: string, targetDir: string): Promise<void> {

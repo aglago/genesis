@@ -9,6 +9,7 @@
   "configFactory": "dashboard",
   "envVars": [],
   "scaffoldFiles": [
+    { "source": "scaffold/app-shell.tsx", "target": "components/dashboard-shell.tsx" },
     { "source": "scaffold/layout.tsx", "target": "app/(dashboard)/layout.tsx" },
     { "source": "scaffold/page.tsx", "target": "app/(dashboard)/dashboard/page.tsx" },
     { "source": "scaffold/users-page.tsx", "target": "app/(dashboard)/dashboard/users/page.tsx" },
